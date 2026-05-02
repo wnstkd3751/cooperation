@@ -1,13 +1,11 @@
 #! /usr/bin/env bash
-
 set -e
 set -x
 
-# Let the DB start
+# MongoDB 연결 대기
 python app/backend_pre_start.py
 
-# Run migrations
-alembic upgrade head
+# MongoDB는 마이그레이션 불필요 (Beanie가 인덱스 자동 생성)
 
-# Create initial data in DB
+# 초기 데이터 생성
 python app/initial_data.py

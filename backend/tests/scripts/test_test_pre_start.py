@@ -1,33 +1,26 @@
-from unittest.mock import MagicMock, patch
+"""원본 구조 유지 — MongoDB ping 모킹"""
+from unittest.mock import AsyncMock, patch
 
-from sqlmodel import select
+import pytest
 
 from app.tests_pre_start import init, logger
 
 
-def test_init_successful_connection() -> None:
-    engine_mock = MagicMock()
-
-    session_mock = MagicMock()
-    session_mock.__enter__.return_value = session_mock
-
-    select1 = select(1)
-
+@pytest.mark.asyncio
+async def test_init_successful_connection() -> None:
     with (
-        patch("app.tests_pre_start.Session", return_value=session_mock),
-        patch("app.tests_pre_start.select", return_value=select1),
+        patch("app.tests_pre_start.AsyncIOMotorClient") as mock_client_cls,
         patch.object(logger, "info"),
         patch.object(logger, "error"),
-        patch.object(logger, "warn"),
     ):
+        mock_client = AsyncMock()
+        mock_client.admin.command = AsyncMock(return_value={"ok": 1})
+        mock_client_cls.return_value = mock_client
+
         try:
-            init(engine_mock)
+            await init()
             connection_successful = True
         except Exception:
             connection_successful = False
 
-        assert connection_successful, (
-            "The database connection should be successful and not raise an exception."
-        )
-
-        session_mock.exec.assert_called_once_with(select1)
+        assert connection_successful

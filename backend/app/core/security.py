@@ -8,14 +8,7 @@ from pwdlib.hashers.bcrypt import BcryptHasher
 
 from app.core.config import settings
 
-password_hash = PasswordHash(
-    (
-        Argon2Hasher(),
-        BcryptHasher(),
-    )
-)
-
-
+password_hash = PasswordHash((Argon2Hasher(), BcryptHasher()))
 ALGORITHM = "HS256"
 
 

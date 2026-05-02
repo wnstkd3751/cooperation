@@ -1,42 +1,60 @@
-from collections.abc import Generator
+"""
+원본 대비 변경:
+- PostgreSQL Session → mongomock-motor 인메모리 MongoDB
+- 동기 TestClient → AsyncClient
+"""
+from collections.abc import AsyncGenerator
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import Session, delete
+from beanie import init_beanie
+from httpx import ASGITransport, AsyncClient
+from mongomock_motor import AsyncMongoMockClient
 
 from app.core.config import settings
-from app.core.db import engine, init_db
 from app.main import app
-from app.models import Item, User
+from app.models import (
+    FeedbackLogDocument,
+    IngredientDocument,
+    ItemDocument,
+    RecipeDocument,
+    UserDocument,
+)
 from tests.utils.user import authentication_token_from_email
 from tests.utils.utils import get_superuser_token_headers
 
 
-@pytest.fixture(scope="session", autouse=True)
-def db() -> Generator[Session, None, None]:
-    with Session(engine) as session:
-        init_db(session)
-        yield session
-        statement = delete(Item)
-        session.execute(statement)
-        statement = delete(User)
-        session.execute(statement)
-        session.commit()
+@pytest.fixture(autouse=True)
+async def init_test_db():
+    """각 테스트마다 인메모리 MongoDB 초기화"""
+    client = AsyncMongoMockClient()
+    await init_beanie(
+        database=client["test_db"],
+        document_models=[
+            UserDocument,
+            ItemDocument,
+            IngredientDocument,
+            RecipeDocument,
+            FeedbackLogDocument,
+        ],
+    )
+    yield
 
 
-@pytest.fixture(scope="module")
-def client() -> Generator[TestClient, None, None]:
-    with TestClient(app) as c:
+@pytest.fixture
+async def client() -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as c:
         yield c
 
 
-@pytest.fixture(scope="module")
-def superuser_token_headers(client: TestClient) -> dict[str, str]:
-    return get_superuser_token_headers(client)
+@pytest.fixture
+async def superuser_token_headers(client: AsyncClient) -> dict[str, str]:
+    return await get_superuser_token_headers(client)
 
 
-@pytest.fixture(scope="module")
-def normal_user_token_headers(client: TestClient, db: Session) -> dict[str, str]:
-    return authentication_token_from_email(
-        client=client, email=settings.EMAIL_TEST_USER, db=db
+@pytest.fixture
+async def normal_user_token_headers(client: AsyncClient) -> dict[str, str]:
+    return await authentication_token_from_email(
+        client=client, email=settings.EMAIL_TEST_USER
     )

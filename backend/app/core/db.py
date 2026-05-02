@@ -1,33 +1,45 @@
-from sqlmodel import Session, create_engine, select
+import logging
 
-from app import crud
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from app.core.config import settings
-from app.models import User, UserCreate
+from app.models import (
+    FeedbackLogDocument,
+    IngredientDocument,
+    ItemDocument,
+    RecipeDocument,
+    UserDocument,
+)
 
-engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
+logger = logging.getLogger(__name__)
+_client: AsyncIOMotorClient | None = None
 
 
-# make sure all SQLModel models are imported (app.models) before initializing DB
-# otherwise, SQLModel might fail to initialize relationships properly
-# for more details: https://github.com/fastapi/full-stack-fastapi-template/issues/28
-
-
-def init_db(session: Session) -> None:
-    # Tables should be created with Alembic migrations
-    # But if you don't want to use migrations, create
-    # the tables un-commenting the next lines
-    # from sqlmodel import SQLModel
-
-    # This works because the models are already imported and registered from app.models
-    # SQLModel.metadata.create_all(engine)
-
-    user = session.exec(
-        select(User).where(User.email == settings.FIRST_SUPERUSER)
-    ).first()
-    if not user:
-        user_in = UserCreate(
-            email=settings.FIRST_SUPERUSER,
-            password=settings.FIRST_SUPERUSER_PASSWORD,
-            is_superuser=True,
+async def connect_mongodb() -> None:
+    """FastAPI lifespan startup에서 호출"""
+    global _client
+    try:
+        _client = AsyncIOMotorClient(settings.MONGODB_URI)
+        await init_beanie(
+            database=_client[settings.MONGODB_DB_NAME],
+            document_models=[
+                UserDocument,
+                ItemDocument,
+                IngredientDocument,
+                RecipeDocument,
+                FeedbackLogDocument,
+            ],
         )
-        user = crud.create_user(session=session, user_create=user_in)
+        logger.info("MongoDB Atlas 연결 성공")
+    except Exception as e:
+        logger.error(f"MongoDB 연결 실패: {e}")
+        raise
+
+
+async def disconnect_mongodb() -> None:
+    """FastAPI lifespan shutdown에서 호출"""
+    global _client
+    if _client:
+        _client.close()
+        logger.info("MongoDB 연결 종료")
