@@ -1,7 +1,9 @@
-.vscode/*
-!.vscode/extensions.json
+# backend
+venv/
+__pycache__/
+
+# frontend
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+dist/
+
+.env
