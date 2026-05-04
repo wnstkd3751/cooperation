@@ -27,11 +27,22 @@ export default function Home() {
       <ExpireBanner />
       <CategoryTabs />
 
-      <div className="grid grid-cols-2 gap-4 px-4 mt-4">
-        {filtered.map((item) => (
-          <FoodCard key={item.id} item={item} />
-        ))}
-      </div>
+        <div className="max-w-6xl mx-auto">
+
+    <div className="
+  grid 
+  grid-cols-1 
+  md:grid-cols-2 
+  gap-6 
+  px-6 
+  mt-6
+">
+      {filtered.map((item) => (
+        <FoodCard key={item.id} item={item} />
+      ))}
+    </div>
+
+  </div>
 
       <button
         onClick={() => setOpenAdd(true)}
