@@ -1,25 +1,23 @@
-// App.jsx
-import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import AddFoodModal from "./components/AddFoodModal";
+import Fridge from "./pages/Fridge";
+import Recipe from "./pages/Recipe";
+import Setting from "./pages/Setting";
+import BottomNav from "./components/BottomNav";
 
-function App() {
-  const [open, setOpen] = useState(false);
-
+export default function App() {
   return (
-    <>
-      <Home />
+    <BrowserRouter>
+      <div className="pb-20">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/fridge" element={<Fridge />} />
+          <Route path="/recipe" element={<Recipe />} />
+          <Route path="/setting" element={<Setting />} />
+        </Routes>
+      </div>
 
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-10 right-6 bg-red-400 text-white w-14 h-14 rounded-full"
-      >
-        +
-      </button>
-
-      {open && <AddFoodModal onClose={() => setOpen(false)} />}
-    </>
+      <BottomNav />
+    </BrowserRouter>
   );
 }
-
-export default App;
