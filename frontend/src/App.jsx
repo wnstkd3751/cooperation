@@ -8,7 +8,7 @@ import BottomNav from "./components/BottomNav";
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="pb-20">
+      <div className="bg-gray-100 min-h-screen">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/fridge" element={<Fridge />} />

@@ -11,6 +11,17 @@ export default function AddFoodModal({ onClose }) {
     dday: 3,
   });
 
+  const [image, setImage] = useState(null);
+const [preview, setPreview] = useState(null);
+
+  const handleImage = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setImage(file);
+  setPreview(URL.createObjectURL(file));
+};
+
   const handleSubmit = () => {
     if (!form.name) return;
 
