@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useFridgeStore } from "../store/useFridgeStore";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import ExpireBanner from "../components/ExpireBanner";
 import CategoryTabs from "../components/CategoryTabs";
@@ -7,13 +6,46 @@ import FoodCard from "../components/FoodCard";
 import AddFoodModal from "../components/AddFoodModal";
 import ExpireModal from "../components/ExpireModal";
 import RecipeModal from "../components/RecipeModal";
+import { getFridgeItems } from "../api/fridgeApi";
 
 export default function Fridge() {
-  const { items, category } = useFridgeStore();
+
+  const [items, setItems] = useState([]);
+  const [category, setCategory] = useState("전체");
 
   const [openAdd, setOpenAdd] = useState(false);
   const [openExpire, setOpenExpire] = useState(false);
   const [openRecipe, setOpenRecipe] = useState(false);
+
+  // 🔥 데이터 불러오기
+  const fetchData = async () => {
+    try {
+      const data = await getFridgeItems("user123");
+
+      // 👉 D-day 계산
+      const today = new Date();
+
+      const withDday = data.map((item) => {
+        const expire = new Date(item.expire_date);
+        const diff = Math.ceil((expire - today) / (1000 * 60 * 60 * 24));
+
+        return {
+          ...item,
+          dday: diff,
+        };
+      });
+
+      setItems(withDday);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // 🔥 카테고리 필터
   const filtered =
     category === "전체"
       ? items
@@ -22,16 +54,21 @@ export default function Fridge() {
   return (
     <div>
 
-   
       <Header onOpenExpire={() => setOpenExpire(true)} />
-  <ExpireBanner onOpenRecipe={() => setOpenRecipe(true)} />
+      <ExpireBanner onOpenRecipe={() => setOpenRecipe(true)} />
+
       <div className="relative">
-      <CategoryTabs />
-      {/* ➕ 버튼 (헤더 아래 오른쪽) */}
+        {/* 👉 CategoryTabs에 상태 연결 */}
+        <CategoryTabs
+          category={category}
+          setCategory={setCategory}
+        />
+
+        {/* ➕ 버튼 */}
         <button
           onClick={() => setOpenAdd(true)}
           className="
-            absolute top-0 bottom-1 right-10 
+            absolute right-4 top-2
             w-12 h-12
             rounded-full
             bg-red-400 text-white text-2xl
@@ -41,10 +78,10 @@ export default function Fridge() {
         >
           +
         </button>
-        </div>
+      </div>
 
-
-      <div className="max-w-6xl mx-auto ">
+      {/* 리스트 */}
+      <div className="max-w-6xl mx-auto">
         <div className="
           grid 
           grid-cols-1 
@@ -54,15 +91,25 @@ export default function Fridge() {
           mt-6
         ">
           {filtered.map((item) => (
-            <FoodCard key={item.id} item={item} />
+            <FoodCard key={item.item_id} item={item} />
           ))}
         </div>
       </div>
 
-      {openAdd && <AddFoodModal onClose={() => setOpenAdd(false)} />}
+      {/* 🔥 모달들 */}
+      {openAdd && (
+        <AddFoodModal
+          onClose={() => {
+            setOpenAdd(false);
+            fetchData(); // 🔥 추가 후 자동 갱신 핵심
+          }}
+        />
+      )}
+
       {openExpire && (
         <ExpireModal items={items} onClose={() => setOpenExpire(false)} />
       )}
+
       {openRecipe && (
         <RecipeModal onClose={() => setOpenRecipe(false)} />
       )}
