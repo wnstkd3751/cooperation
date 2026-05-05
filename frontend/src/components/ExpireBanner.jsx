@@ -1,5 +1,5 @@
 // components/ExpireBanner.jsx
-export default function ExpireBanner() {
+export default function ExpireBanner({ onOpenRecipe }) {
   return (
     <div className="mx-6 mt-4 p-4 rounded-2xl bg-yellow-50 border border-yellow-200 flex justify-between items-center">
 
@@ -8,7 +8,10 @@ export default function ExpireBanner() {
         <p className="text-sm text-gray-500">유통기한 3일 이내!</p>
       </div>
 
-      <button className="text-red-400 font-semibold">
+      <button
+        onClick={onOpenRecipe}
+        className="text-red-400 font-semibold"
+      >
         레시피 보기 →
       </button>
     </div>
