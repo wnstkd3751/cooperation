@@ -17,12 +17,12 @@ export default function Fridge() {
   const [openExpire, setOpenExpire] = useState(false);
   const [openRecipe, setOpenRecipe] = useState(false);
 
-  // 🔥 데이터 불러오기
+  // 데이터 불러오기
   const fetchData = async () => {
     try {
       const data = await getFridgeItems("user123");
 
-      // 👉 D-day 계산
+      // D-day 계산
       const today = new Date();
 
       const withDday = data.map((item) => {
@@ -45,7 +45,7 @@ export default function Fridge() {
     fetchData();
   }, []);
 
-  // 🔥 카테고리 필터
+  // 카테고리 필터
   const filtered =
     category === "전체"
       ? items
@@ -58,17 +58,17 @@ export default function Fridge() {
       <ExpireBanner onOpenRecipe={() => setOpenRecipe(true)} />
 
       <div className="relative">
-        {/* 👉 CategoryTabs에 상태 연결 */}
+        {/* CategoryTabs에 상태 연결 */}
         <CategoryTabs
           category={category}
           setCategory={setCategory}
         />
 
-        {/* ➕ 버튼 */}
+        {/* 추가 버튼 */}
         <button
           onClick={() => setOpenAdd(true)}
           className="
-            absolute right-4 top-2
+            absolute right-8 top-0
             w-12 h-12
             rounded-full
             bg-red-400 text-white text-2xl
@@ -96,13 +96,14 @@ export default function Fridge() {
         </div>
       </div>
 
-      {/* 🔥 모달들 */}
+      {/* 모달들 */}
       {openAdd && (
         <AddFoodModal
           onClose={() => {
             setOpenAdd(false);
-            fetchData(); // 🔥 추가 후 자동 갱신 핵심
+             // 추가 후 자동 갱신 핵심
           }}
+          onSuccess={fetchData}
         />
       )}
 

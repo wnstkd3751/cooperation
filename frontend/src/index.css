@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🔥 기본 리셋 + 앱 느낌 */
+/* 기본 리셋 + 앱 느낌 */
 body {
   margin: 0;
   padding: 0;
@@ -11,7 +11,7 @@ body {
   background-color: #f5f5f5;
 }
 
-/* 📱 모바일 앱처럼 가운데 정렬 */
+/* 모바일 앱처럼 가운데 정렬 */
 #root {
   max-width: 100%;
   margin: 0 auto;
@@ -19,12 +19,12 @@ body {
   min-height: 100vh;
 }
 
-/* 🧊 카드 공통 스타일 */
+/* 카드 공통 스타일 */
 .card {
   @apply bg-white rounded-2xl shadow-md p-4;
 }
 
-/* 🔴 버튼 공통 */
+/* 버튼 공통 */
 .btn-primary {
   @apply bg-red-400 text-white rounded-xl py-2 px-4 font-semibold;
 }
@@ -33,7 +33,7 @@ body {
   @apply bg-gray-200 text-gray-700 rounded-xl py-2 px-4;
 }
 
-/* 🏷️ D-day 색상 */
+/*  D-day 색상 */
 .dday-red {
   @apply bg-red-100 text-red-500;
 }
@@ -46,12 +46,12 @@ body {
   @apply bg-green-100 text-green-500;
 }
 
-/* 🔔 배너 */
+/* 배너 */
 .banner {
   @apply mx-4 mt-3 p-3 rounded-xl bg-red-50 text-red-500 text-sm font-medium;
 }
 
-/* 📂 카테고리 버튼 */
+/* 카테고리 버튼 */
 .category-btn {
   @apply px-3 py-1 rounded-full text-sm bg-gray-200;
 }
@@ -60,7 +60,7 @@ body {
   @apply bg-red-400 text-white;
 }
 
-/* ➕ 플로팅 버튼 */
+/* 플로팅 버튼 */
 .floating-btn {
   @apply fixed bottom-6 right-6 w-14 h-14 rounded-full 
          bg-red-400 text-white text-2xl 
@@ -68,22 +68,22 @@ body {
          shadow-lg;
 }
 
-/* 🪟 모달 배경 */
+/* 모달 배경 */
 .modal-overlay {
   @apply fixed inset-0 bg-black/40 flex justify-center items-center;
 }
 
-/* 🪟 모달 박스 */
+/* 모달 박스 */
 .modal-box {
   @apply bg-white rounded-2xl p-5 w-[90%] max-w-sm;
 }
 
-/* 🧾 입력창 */
+/* 입력창 */
 .input {
   @apply w-full border border-gray-300 rounded-lg p-2 mt-2;
 }
 
-/* 📊 스크롤 자연스럽게 */
+/* 스크롤 자연스럽게 */
 * {
   -webkit-tap-highlight-color: transparent;
 }
