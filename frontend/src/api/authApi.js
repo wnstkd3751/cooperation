@@ -10,10 +10,8 @@ export const login = async (email, password) => {
   return res.data;
 };
 
-export const signup = async (email, password) => {
-  const res = await axios.post(`${BASE_URL}/auth/signup`, {
-    email,
-    password,
-  });
+export const signup = async (data) => {
+  const res = await axios.post(`${BASE_URL}/auth/signup`, data);
   return res.data;
 };
+
