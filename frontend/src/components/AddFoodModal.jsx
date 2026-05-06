@@ -1,29 +1,40 @@
 import { useState } from "react";
 import { addFridgeItem } from "../api/fridgeApi";
 
-export default function AddFoodModal({ onClose }) {
+export default function AddFoodModal({ onClose, onSuccess }) {
   const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("기타");
+const [quantity, setQuantity] = useState(""); // 🔥 이거 추가
+const [category, setCategory] = useState("");
+const [purchase_date, setPurchaseDate] = useState("");
+const [expire_date, setExpireDate] = useState("");
+const [image, setImage] = useState("");
 
   const handleSubmit = async () => {
-    try {
-      await addFridgeItem({
-        user_id: "user123",
-        name,
-        quantity: amount,
-        category,
-        expire_date: "2026-05-10",
-        image: "",
-      });
+  try {
+    const newItem = {
+      user_id: "user123",          // 🔥 필수
+      food_id: Date.now().toString(), // 🔥 임시 (나중에 개선 가능)
 
-      alert("추가 완료!");
-      onClose();
-    } catch (e) {
-      console.error(e);
-      alert("에러 발생");
-    }
-  };
+      name,
+      quantity: Number(quantity),  // 🔥 숫자로 변환
+      category,
+
+      image: image || "",
+
+      purchase_date,               // "2026-05-06"
+      expire_date,
+
+      created_at: new Date().toISOString(), // 🔥 필수
+    };
+
+    await addFridgeItem(newItem);
+
+    onSuccess(); // 👉 성공 시만 닫기 + 갱신
+    onClose();
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   return (
     <div className="modal-overlay">
@@ -40,8 +51,8 @@ export default function AddFoodModal({ onClose }) {
         <input
           className="input"
           placeholder="수량"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
         />
 
         <button onClick={handleSubmit} className="btn-primary mt-3 w-full">
