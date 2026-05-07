@@ -2,11 +2,10 @@ import axios from "axios";
 
 const BASE_URL = "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev";
 
-export const login = async (email, password) => {
-  const res = await axios.post(`${BASE_URL}/auth/login`, {
-    email,
-    password,
-  });
+export const login = async (data) => {
+
+  const res = await axios.post(`${BASE_URL}/auth/login`, data);
+
   return res.data;
 };
 

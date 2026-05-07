@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { signup } from "../api/authApi";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [form, setForm] = useState({
@@ -18,10 +19,13 @@ export default function Signup() {
     });
   };
 
+  const navigate = useNavigate();
+
   const handleSignup = async () => {
     try {
       await signup(form);
       alert("회원가입 성공");
+      navigate("/login");
     } catch (e) {
       alert("회원가입 실패");
     }
