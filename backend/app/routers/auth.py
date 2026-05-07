@@ -25,7 +25,7 @@ def signup(user: UserCreate):
     }
 
 
-# 🔥 로그인
+# 로그인
 @router.post("/login")
 def login(user: UserLogin):
 

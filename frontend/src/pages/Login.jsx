@@ -1,23 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../api/authApi";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
   try {
+
     const res = await login({
       id: id,
       password: password,
     });
 
+
     localStorage.setItem("token", res.access_token);
     localStorage.setItem("user_id", res.user_id);
-
-    navigate("/fridge");
+    
+    alert("로그인 성공");
+    navigate("/");
   } catch (e) {
+    console.error(e.response?.data);
     alert("로그인 실패");
   }
 };
@@ -30,15 +35,15 @@ export default function Login() {
 
         {/* 타이틀 */}
         <h1 className="text-2xl font-bold text-center mb-6">
-          🧊 냉비 로그인
+          🧊 로그인
         </h1>
 
-        {/* 이메일 */}
+        {/* 아이디 */}
         <input
-          type="email"
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="아이디"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
           className="w-full p-3 mb-3 border rounded-lg"
         />
 
