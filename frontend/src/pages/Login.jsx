@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
+import { useAuthStore } from "../store/authStore";
 
 export default function Login() {
   const [id, setId] = useState("");
@@ -16,13 +17,25 @@ export default function Login() {
     });
 
 
-    localStorage.setItem("token", res.access_token);
-    localStorage.setItem("user_id", res.user_id);
+    const { login: setAuth } = useAuthStore.getState();
+
+    login(
+  res.access_token,
+  res.refresh_token,
+  res.user_id
+);
+
+    localStorage.setItem(
+      "refresh_token",
+      res.refresh_token
+    );
+
+    setAuth(res.access_token, res.user_id);
     
     alert("로그인 성공");
     navigate("/");
   } catch (e) {
-    console.error(e.response?.data);
+    console.error(e);
     alert("로그인 실패");
   }
 };

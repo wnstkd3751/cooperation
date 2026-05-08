@@ -1,22 +1,26 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.user import UserCreate, UserLogin
 from app.services import user_service
-from app.utils.jwt import create_access_token
+from app.utils.jwt import (
+    create_access_token,
+    create_refresh_token,
+    decode_token
+)
 from db.redis import redis_client
+from app.schemas.auth import SignupRequest, LoginRequest
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-# 🔥 회원가입
+# 회원가입
 @router.post("/signup")
-def signup(user: UserCreate):
+def signup(user: SignupRequest):
 
-    # ✅ 아이디 중복 체크
+    # 아이디 중복 체크
     existing_user = user_service.user_collection.find_one({"id": user.id})
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다")
 
-    # ✅ 유저 생성
+    # 유저 생성
     user_id = user_service.create_user(user)
 
     return {
@@ -27,24 +31,58 @@ def signup(user: UserCreate):
 
 # 로그인
 @router.post("/login")
-def login(user: UserLogin):
+def login(user: LoginRequest):
 
-    # ✅ 유저 인증
-    db_user = user_service.authenticate_user(user.id, user.password)
+    db_user = user_service.authenticate_user(
+        user.id,
+        user.password
+    )
 
     if not db_user:
-        raise HTTPException(status_code=401, detail="아이디 또는 비밀번호 오류")
+        raise HTTPException(
+            status_code=400,
+            detail="아이디 또는 비밀번호 오류"
+        )
 
-    # ✅ JWT 생성
-    token = create_access_token({
-        "user_id": str(db_user["_id"])
+    # access token
+    access_token = create_access_token({
+        "sub": str(db_user["_id"])
     })
 
-    # ✅ Redis 세션 저장 (1시간)
-    redis_client.set(token, str(db_user["_id"]), ex=3600)
+    # refresh token
+    refresh_token = create_refresh_token({
+        "sub": str(db_user["_id"])
+    })
+
+    # redis 저장
+    redis_client.set(
+        refresh_token,
+        str(db_user["_id"]),
+        ex=60 * 60 * 24 * 7
+    )
 
     return {
-        "access_token": token,
-        "token_type": "bearer",
+        "access_token": access_token,
+        "refresh_token": refresh_token,
         "user_id": str(db_user["_id"])
+    }
+
+@router.post("/refresh")
+def refresh_token(refresh_token: str):
+
+    # redis 확인
+    user_id = redis_client.get(refresh_token)
+
+    if not user_id:
+        raise HTTPException(
+            status_code=401,
+            detail="refresh token 만료"
+        )
+
+    new_access_token = create_access_token({
+        "sub": user_id.decode()
+    })
+
+    return {
+        "access_token": new_access_token
     }
