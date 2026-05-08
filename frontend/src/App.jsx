@@ -6,24 +6,64 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Fridge from "./pages/Fridge";
+import ProtectedRoute from "./routes/ProctectRoute";
 
 function Layout() {
+
   const location = useLocation();
 
-  // 숨길 경로
+  // nav 숨김
   const hideNav = ["/login", "/signup"].includes(location.pathname);
 
   return (
     <>
       <div className="bg-gray-100 min-h-screen">
+
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/fridge" element={<Fridge />} />
+
+          {/* 공개 */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/recipe" element={<Recipe />} />
-          <Route path="/setting" element={<Setting />} />
+
+          {/* 보호 */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/fridge"
+            element={
+              <ProtectedRoute>
+                <Fridge />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/recipe"
+            element={
+              <ProtectedRoute>
+                <Recipe />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/setting"
+            element={
+              <ProtectedRoute>
+                <Setting />
+              </ProtectedRoute>
+            }
+          />
+
         </Routes>
+
       </div>
 
       {!hideNav && <BottomNav />}

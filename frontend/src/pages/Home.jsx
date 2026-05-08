@@ -8,13 +8,16 @@ import { getFridgeItems } from "../api/fridgeApi";
 export default function Home() {
   const [items, setItems] = useState([]);
 
+  
+
   const [openExpire, setOpenExpire] = useState(false);
   const [openRecipe, setOpenRecipe] = useState(false);
 
   // 데이터 불러오기
   const fetchData = async () => {
     try {
-      const data = await getFridgeItems("user123");
+      const user_id = localStorage.getItem("user_id");
+      const data = await getFridgeItems(user_id);
 
       const today = new Date();
 

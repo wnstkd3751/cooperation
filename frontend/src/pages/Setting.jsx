@@ -1,11 +1,15 @@
 import { useState } from "react";
 import Header from "../components/Header";
 import ExpireModal from "../components/ExpireModal";
+import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 export default function Setting() {
 
   const [openExpire, setOpenExpire] = useState(false);
-
+  const { logout } = useAuthStore();
+  const navigate = useNavigate();
+  
   return (
     <div>
           <Header onOpenExpire={() => setOpenExpire(true)} />
@@ -36,7 +40,14 @@ export default function Setting() {
         </div>
 
         <div className="bg-white p-4 rounded-xl shadow-sm text-red-400">
-          로그아웃
+          <button
+  onClick={() => {
+    logout();
+    navigate("/login");
+  }}
+>
+  로그아웃
+</button>
         </div>
 
       </div>
