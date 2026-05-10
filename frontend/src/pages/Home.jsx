@@ -17,6 +17,7 @@ export default function Home() {
   const fetchData = async () => {
     try {
       const user_id = localStorage.getItem("user_id");
+      console
       const data = await getFridgeItems(user_id);
 
       const today = new Date();

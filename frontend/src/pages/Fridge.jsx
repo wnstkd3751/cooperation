@@ -20,7 +20,8 @@ export default function Fridge() {
   // 데이터 불러오기
   const fetchData = async () => {
     try {
-      const data = await getFridgeItems("user123");
+      const user_id = localStorage.getItem("user_id");
+      const data = await getFridgeItems(user_id);
 
       // D-day 계산
       const today = new Date();
