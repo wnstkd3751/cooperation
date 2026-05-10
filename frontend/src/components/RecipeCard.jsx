@@ -1,30 +1,99 @@
 export default function RecipeCard({ recipe }) {
-  const percent = (recipe.have / recipe.total) * 100;
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow">
-      <img src={recipe.image} className="h-40 w-full object-cover" />
 
-      <div className="p-3">
-        <h3 className="font-semibold">{recipe.name}</h3>
+    <div className="
+      bg-gradient-to-br from-orange-50 to-white
+      rounded-2xl
+      overflow-hidden
+      shadow-sm
+      border border-gray-100
+      hover:shadow-md
+      transition
+    ">
 
-        <div className="text-xs text-gray-500 flex gap-2 mt-1">
-          <span>{recipe.level}</span>
-          <span>{recipe.time}</span>
-          <span>{recipe.kcal}kcal</span>
+      {/* 이미지 */}
+      <div className="
+        h-52
+        bg-gray-50
+        flex
+        items-center
+        justify-center
+        p-4
+      ">
+
+        <img
+          src={recipe.images?.main}
+          alt={recipe.recipeName}
+          className="
+            max-h-full
+            max-w-full
+            object-contain
+          "
+        />
+      </div>
+
+      {/* 내용 */}
+      <div className="p-4">
+
+        <h3 className="
+          font-semibold
+          text-base
+          line-clamp-2
+          min-h-[48px]
+        ">
+          {recipe.recipeName}
+        </h3>
+
+        <div className="
+          flex
+          flex-wrap
+          items-center
+          gap-2
+          mt-3
+          text-xs
+          text-gray-500
+        ">
+
+          <span className="
+            bg-orange-100
+            text-orange-600
+            px-2 py-1
+            rounded-full
+          ">
+            {recipe.recipeCategory}
+          </span>
+
+          <span>
+            {recipe.cookingMethod}
+          </span>
         </div>
 
-        <div className="mt-2">
-          <p className="text-green-600 text-sm">
-            재료 {recipe.have}/{recipe.total} 보유
-          </p>
+        <div className="
+          mt-4
+          flex
+          items-center
+          justify-between
+        ">
 
-          <div className="w-full bg-gray-200 h-2 rounded">
-            <div
-              className="bg-green-400 h-2 rounded"
-              style={{ width: `${percent}%` }}
-            />
-          </div>
+          <span className="
+            text-sm
+            font-semibold
+            text-green-600
+          ">
+            {recipe.nutrition?.calories} kcal
+          </span>
+
+          <button className="
+            text-xs
+            bg-gray-100
+            hover:bg-gray-200
+            px-3 py-1
+            rounded-lg
+            transition
+          ">
+            상세보기
+          </button>
         </div>
       </div>
     </div>

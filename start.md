@@ -6,3 +6,5 @@ cd frontend
 npm run dev -- --host
 
 redis-server
+
+pip freeze > requirements.txt
