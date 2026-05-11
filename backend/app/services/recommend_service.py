@@ -1,15 +1,33 @@
+from db.mongo import recipe_collection
 import app.utils.decay as decay
     
 async def calculate_score(recipe, weight_map):
     score = 0.0
+    matched = 0
+
     for ingredient in recipe["ingredients"]:
         # 유저가 가진 재료면 weight 더하기
         # 없는 재료면 0 더하기
-        score += weight_map.get(ingredient, 0)
+        weight = weight_map.get(ingredient, 0)
+        score += weight
         
-    return score
+        if weight != 0:
+            matched += 1
 
-async def recommend(ingredients, recipes):
+    total = len(recipe["ingredients"])
+    if total == 0:
+        return 0.0
+
+    # 매칭률 계산
+    match_ratio = matched / total
+
+    # 최종 점수
+    return score * match_ratio
+
+def recommend(ingredients):
+    # DB에서 레시피 가져오기
+    recipes = list(recipe_collection.find({}))
+
     # 가중치 계산
     weighted = decay.get_expiry_weights(ingredients)
 
