@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import fridge, auth, recipe
+from app.routers import fridge, auth, recipe, ocr
 
 
 app = FastAPI()
@@ -18,3 +18,4 @@ app.add_middleware(
 app.include_router(fridge.router)
 app.include_router(auth.router)
 app.include_router(recipe.router)
+app.include_router(ocr.router)

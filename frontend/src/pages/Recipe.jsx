@@ -70,7 +70,9 @@ export default function Recipe() {
     // 카테고리
     if (category !== "전체") {
 
-      url += `&category=${category}`;
+
+
+      url += `&category=${encodeURIComponent(category)}`;
 
     }
 

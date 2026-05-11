@@ -5,7 +5,7 @@ from datetime import datetime
 user_collection = db["user"]
 
 
-def create_user(user):
+async def create_user(user):
     user_dict = user.dict()
 
     # 비밀번호 암호화
@@ -14,12 +14,12 @@ def create_user(user):
     # 생성 시간 추가
     user_dict["created_at"] = datetime.utcnow().isoformat()
 
-    result = user_collection.insert_one(user_dict)
+    result = await user_collection.insert_one(user_dict)
     return str(result.inserted_id)
 
 
-def authenticate_user(user_id, password):
-    user = user_collection.find_one({"id": user_id})
+async def authenticate_user(user_id, password):
+    user = await user_collection.find_one({"id": user_id})
 
     if not user:
         return None
