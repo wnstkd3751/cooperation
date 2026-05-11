@@ -1,12 +1,20 @@
 import axios from "axios";
 
-const instance = axios.create({
-  baseURL:
-    "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev",
+const BASE_URL =
+  "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev";
+
+const api = axios.create({
+  baseURL: BASE_URL,
 });
 
-instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+// =========================
+// 요청 인터셉터 (Access Token 자동 첨부)
+// =========================
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+
+  console.log("🚀 REQUEST URL:", config.url);
+  console.log("🔑 ACCESS TOKEN:", token);
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -15,33 +23,35 @@ instance.interceptors.request.use((config) => {
   return config;
 });
 
-instance.interceptors.response.use(
-
+// =========================
+// 응답 인터셉터 (401 → refresh 처리)
+// =========================
+api.interceptors.response.use(
   (response) => response,
-
   async (error) => {
-
     const originalRequest = error.config;
 
-    // access 만료
+    // access token 만료 처리
     if (
       error.response?.status === 401 &&
       !originalRequest._retry
     ) {
-
       originalRequest._retry = true;
 
       try {
-
-        const refresh_token =
+        const refreshToken =
           localStorage.getItem("refresh_token");
 
+        if (!refreshToken) {
+          throw new Error("No refresh token");
+        }
+
         const res = await axios.post(
-          "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/auth/refresh",
+          `${BASE_URL}/auth/refresh`,
           null,
           {
             params: {
-              refresh_token,
+              refresh_token: refreshToken,
             },
           }
         );
@@ -49,19 +59,22 @@ instance.interceptors.response.use(
         const newAccessToken =
           res.data.access_token;
 
+        console.log("🔄 NEW ACCESS TOKEN:", newAccessToken);
+
         localStorage.setItem(
-          "token",
+          "access_token",
           newAccessToken
         );
 
         originalRequest.headers.Authorization =
           `Bearer ${newAccessToken}`;
 
-        return instance(originalRequest);
-
+        return api(originalRequest);
       } catch (err) {
+        console.log("❌ Refresh 실패 → 로그아웃");
 
-        localStorage.clear();
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
 
         window.location.href = "/login";
       }
@@ -71,4 +84,4 @@ instance.interceptors.response.use(
   }
 );
 
-export default instance;
+export default api;

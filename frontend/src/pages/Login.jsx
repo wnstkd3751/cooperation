@@ -12,14 +12,16 @@ export default function Login() {
   try {
 
     const res = await login({
-      id: id,
-      password: password,
-    });
+  id,
+  password,
+});
 
 
-    const { login: setAuth } = useAuthStore.getState();
+console.log("로그인 성공, 응답 데이터:", res);
 
-    login(
+const { login: setAuth } = useAuthStore.getState();
+
+setAuth(
   res.access_token,
   res.refresh_token,
   res.user_id
@@ -30,7 +32,6 @@ export default function Login() {
       res.refresh_token
     );
 
-    setAuth(res.access_token, res.user_id);
     
     alert("로그인 성공");
     navigate("/");

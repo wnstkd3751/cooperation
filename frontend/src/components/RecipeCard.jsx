@@ -1,4 +1,4 @@
-export default function RecipeCard({ recipe }) {
+export default function RecipeCard({ recipe, onClick }) {
 
   return (
 
@@ -10,7 +10,7 @@ export default function RecipeCard({ recipe }) {
       border border-gray-100
       hover:shadow-md
       transition
-    ">
+    " onClick={onClick}>
 
       {/* 이미지 */}
       <div className="

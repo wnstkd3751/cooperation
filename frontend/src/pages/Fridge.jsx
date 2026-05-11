@@ -7,6 +7,7 @@ import AddFoodModal from "../components/AddFoodModal";
 import ExpireModal from "../components/ExpireModal";
 import RecipeModal from "../components/RecipeModal";
 import { getFridgeItems } from "../api/fridgeApi";
+import { useAuthStore } from "../store/authStore";
 
 export default function Fridge() {
 
@@ -16,12 +17,16 @@ export default function Fridge() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openExpire, setOpenExpire] = useState(false);
   const [openRecipe, setOpenRecipe] = useState(false);
+  
+  const userId = useAuthStore((state) => state.userId);
+
 
   // 데이터 불러오기
   const fetchData = async () => {
     try {
-      const user_id = localStorage.getItem("user_id");
-      const data = await getFridgeItems(user_id);
+      const data = await getFridgeItems(userId);
+
+      console.log("냉장고 재료 데이터:", data); 
 
       // D-day 계산
       const today = new Date();

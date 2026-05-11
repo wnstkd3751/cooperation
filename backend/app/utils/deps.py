@@ -10,6 +10,8 @@ def get_current_user(authorization: str = Header(None)):
 
     payload = decode_token(token)
 
+    print(payload)
+
     if not payload:
         raise HTTPException(status_code=401, detail="유효하지 않은 토큰")
 
