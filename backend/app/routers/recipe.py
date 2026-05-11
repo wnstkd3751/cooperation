@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from typing import Optional
 
 from app.services import recipe_service
 
@@ -6,7 +7,6 @@ router = APIRouter(
     prefix="/recipes",
     tags=["Recipes"]
 )
-
 
 # =========================
 # 레시피 저장
@@ -21,68 +21,26 @@ def import_recipe_api():
         "insertedCount": inserted_count
     }
 
-
 # =========================
-# 전체 조회
+# 통합 조회
 # =========================
 @router.get("")
 def get_recipe_api(
     page: int = 1,
-    size: int = 16
+    size: int = 16,
+
+    # 추가
+    category: Optional[str] = None,
+    keyword: Optional[str] = None,
+    searchType: Optional[str] = None
 ):
 
-    return recipe_service.get_recipes(page, size)
-
-
-
-
-
-# =========================
-# 검색
-# =========================
-@router.get("/search")
-def search_recipe_api(
-    keyword: str,
-    page: int = 1,
-    size: int = 10
-):
-
-    return recipe_service.search_recipes(
-        keyword,
-        page,
-        size
-    )
-
-# =========================
-# 카테고리
-# =========================
-@router.get("/category/{category}")
-def get_recipe_by_category_api(
-    category: str,
-    page: int = 1,
-    size: int = 10
-):
-
-    return recipe_service.get_recipes_by_category(
-        category,
-        page,
-        size
-    )
-
-# =========================
-# 재료
-# =========================
-@router.get("/ingredient/search")
-def ingredient_search_api(
-    ingredient: str,
-    page: int = 1,
-    size: int = 10
-):
-
-    return recipe_service.search_by_ingredient(
-        ingredient,
-        page,
-        size
+    return recipe_service.get_recipes(
+        page=page,
+        size=size,
+        category=category,
+        keyword=keyword,
+        searchType=searchType
     )
 
 # =========================
@@ -104,4 +62,6 @@ def delete_recipe_api():
 @router.get("/{rcp_seq}")
 def get_recipe_detail_api(rcp_seq: str):
 
-    return recipe_service.get_recipe_detail(rcp_seq)
+    return recipe_service.get_recipe_detail(
+        rcp_seq
+    )

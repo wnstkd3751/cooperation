@@ -75,14 +75,61 @@ def import_recipes():
 
 
 # =========================
-# 전체 조회
+# 전체 조회 + 검색 + 카테고리
 # =========================
-def get_recipes(page: int = 1, size: int = 10):
+def get_recipes(
+    page: int = 1,
+    size: int = 10,
+
+    category: str = None,
+    keyword: str = None,
+    searchType: str = None
+):
 
     skip = (page - 1) * size
 
-    total = recipe_collection.count_documents({})
+    # =========================
+    # 동적 query 생성
+    # =========================
+    query = {}
 
+    # 카테고리
+    if category:
+
+        query["recipeCategory"] = category
+
+    # =========================
+    # 검색
+    # =========================
+
+    if keyword:
+
+        # 레시피명 검색
+        if searchType == "recipe":
+
+            query["recipeName"] = {
+                "$regex": f".*{keyword}.*",
+                "$options": "i"
+            }
+
+        # 재료 검색
+        elif searchType == "ingredient":
+
+            query["ingredients.name"] = {
+                "$regex": f".*{keyword}.*",
+                "$options": "i"
+            }
+
+    # =========================
+    # total count
+    # =========================
+    total = recipe_collection.count_documents(
+        query
+    )
+
+    # =========================
+    # projection
+    # =========================
     projection = {
         "_id": 0,
         "rcpSeq": 1,
@@ -90,19 +137,25 @@ def get_recipes(page: int = 1, size: int = 10):
         "recipeCategory": 1,
         "cookingMethod": 1,
         "images": 1,
-        "nutrition.calories": 1
+        "nutrition.calories": 1,
+        "hashtags": 1
     }
 
+    # =========================
+    # recipes 조회
+    # =========================
     recipes = list(
         recipe_collection.find(
-            {},
+            query,
             projection
         )
         .skip(skip)
         .limit(size)
     )
 
-    total_pages = (total + size - 1) // size
+    total_pages = (
+        total + size - 1
+    ) // size
 
     return {
         "page": page,
@@ -135,108 +188,3 @@ def get_recipe_detail(rcp_seq: str):
         }
 
     return recipe
-
-def search_recipes(
-    keyword: str,
-    page: int = 1,
-    size: int = 10
-):
-
-    skip = (page - 1) * size
-
-    query = {
-    "recipeName": {
-        "$regex": f".*{keyword}.*",
-        "$options": "i"
-    }
-}
-
-    total = recipe_collection.count_documents(query)
-
-    recipes = list(
-        recipe_collection.find(
-            query,
-            {"_id": 0}
-        )
-        .skip(skip)
-        .limit(size)
-    )
-
-    total_pages = (total + size - 1) // size
-
-    return {
-        "page": page,
-        "size": size,
-        "total": total,
-        "totalPages": total_pages,
-        "recipes": recipes
-    }
-
-def get_recipes_by_category(
-    category: str,
-    page: int = 1,
-    size: int = 10
-):
-
-    skip = (page - 1) * size
-
-    query = {
-        "recipeCategory": category
-    }
-
-    total = recipe_collection.count_documents(query)
-
-    recipes = list(
-        recipe_collection.find(
-            query,
-            {"_id": 0}
-        )
-        .skip(skip)
-        .limit(size)
-    )
-
-    total_pages = (total + size - 1) // size
-
-    return {
-        "page": page,
-        "size": size,
-        "total": total,
-        "totalPages": total_pages,
-        "recipes": recipes
-    }
-
-def search_by_ingredient(
-    ingredient: str,
-    page: int = 1,
-    size: int = 10
-):
-
-    skip = (page - 1) * size
-
-    query = {
-        "ingredients.name": {
-    "$regex": f".*{ingredient}.*",
-    "$options": "i"
-}
-    }
-
-    total = recipe_collection.count_documents(query)
-
-    recipes = list(
-        recipe_collection.find(
-            query,
-            {"_id": 0}
-        )
-        .skip(skip)
-        .limit(size)
-    )
-
-    total_pages = (total + size - 1) // size
-
-    return {
-        "page": page,
-        "size": size,
-        "total": total,
-        "totalPages": total_pages,
-        "recipes": recipes
-    }
