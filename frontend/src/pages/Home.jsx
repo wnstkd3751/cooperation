@@ -1,121 +1,384 @@
+import { useEffect, useState } from "react";
+
+import axios from "axios";
+
+import { useNavigate } from "react-router-dom";
+
 import Header from "../components/Header";
-import ExpireBanner from "../components/ExpireBanner";
-import { useState, useEffect } from "react";
 import ExpireModal from "../components/ExpireModal";
-import RecipeModal from "../components/RecipeModal";
-import { getFridgeItems } from "../api/fridgeApi";
+import RecipeDetailModal from "../components/RecipeDetailModal";
 
 export default function Home() {
-  const [items, setItems] = useState([]);
 
-  
+  const navigate = useNavigate();
 
-  const [openExpire, setOpenExpire] = useState(false);
-  const [openRecipe, setOpenRecipe] = useState(false);
+  const [openExpire, setOpenExpire] =
+    useState(false);
 
-  // 데이터 불러오기
-  const fetchData = async () => {
-    try {
-      const user_id = localStorage.getItem("user_id");
-      console
-      const data = await getFridgeItems(user_id);
+  // 추천 레시피
+  const [
+    recommendedRecipes,
+    setRecommendedRecipes
+  ] = useState([]);
 
-      const today = new Date();
+  // 상세 모달
+  const [
+    selectedRecipe,
+    setSelectedRecipe
+  ] = useState(null);
 
-      const withDday = data.map((item) => {
-        const expire = new Date(item.expire_date);
-        const diff = Math.ceil(
-          (expire - today) / (1000 * 60 * 60 * 24)
+  const [openDetail, setOpenDetail] =
+    useState(false);
+
+  // =========================
+  // 추천 레시피 조회
+  // =========================
+  const fetchRecommendedRecipes =
+    async () => {
+
+      try {
+
+        const response =
+          await axios.get(
+            "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes?page=1&size=10"
+          );
+
+        setRecommendedRecipes(
+          response.data.recipes || []
         );
 
-        return {
-          ...item,
-          dday: diff,
-        };
-      });
+      } catch (error) {
 
-      setItems(withDday);
-    } catch (e) {
-      console.error(e);
+        console.error(
+          "추천 레시피 조회 실패",
+          error
+        );
+
+      }
+    };
+
+  // =========================
+  // 상세 조회
+  // =========================
+  const fetchRecipeDetail = async (
+    rcpSeq
+  ) => {
+
+    try {
+
+      const response =
+        await axios.get(
+          `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes/${rcpSeq}`
+        );
+
+      setSelectedRecipe(
+        response.data
+      );
+
+      setOpenDetail(true);
+
+    } catch (error) {
+
+      console.error(
+        "레시피 상세 조회 실패",
+        error
+      );
+
     }
   };
 
+  // =========================
+  // 최초 로딩
+  // =========================
   useEffect(() => {
-    fetchData();
+
+    fetchRecommendedRecipes();
+
   }, []);
 
-  // 유통기한 임박 (3일 이내)
-  const urgentItems = items
-    .filter((i) => i.dday <= 3)
-    .sort((a, b) => a.dday - b.dday)
-    .slice(0, 3);
-
   return (
-    <div>
-      <Header onOpenExpire={() => setOpenExpire(true)} />
-      <ExpireBanner onOpenRecipe={() => setOpenRecipe(true)} />
 
-      <div className="max-w-6xl mx-auto space-y-6 relative top-3 px-4">
+    <div className="min-h-screen bg-gray-50">
 
-        {/* 유통기한 임박 */}
-        <h2 className="text-lg font-bold mb-3">⚠️ 곧 상할 재료</h2>
+      {/* 헤더 */}
+      <Header
+        onOpenExpire={() =>
+          setOpenExpire(true)
+        }
+      />
 
-        <div className="space-y-3">
-          {urgentItems.length === 0 ? (
-            <p className="text-gray-400 text-sm">
-              임박한 재료가 없습니다 👍
-            </p>
-          ) : (
-            urgentItems.map((item) => (
-              <div
-                key={item.item_id}
-                className="bg-white p-4 rounded-xl shadow-sm flex justify-between"
-              >
-                <div>
-                  <p className="font-semibold">{item.name}</p>
-                  <p className="text-sm text-gray-400">
-                    {item.quantity}
-                  </p>
-                </div>
-                <span className="text-sm text-red-400 font-semibold">
-                  D-{item.dday}
-                </span>
-              </div>
-            ))
-          )}
+      <div className="p-5 pb-28">
+
+        {/* 유통기한 카드 */}
+        <div
+          className="
+            bg-yellow-50
+            border
+            border-yellow-200
+            rounded-3xl
+            p-5
+            flex
+            items-center
+            justify-between
+            mb-8
+          "
+        >
+
+          <div>
+
+            <div className="font-bold text-lg">
+              당근 외 3개
+            </div>
+
+            <div className="text-sm text-gray-500">
+              유통기한 3일 이내!
+            </div>
+
+          </div>
+
+          <button
+            onClick={() =>
+              navigate("/recipe")
+            }
+            className="
+              text-red-400
+              font-semibold
+            "
+          >
+            레시피 보기 →
+          </button>
+
         </div>
 
+        {/* 임박 재료 */}
+        <div className="mb-10">
+
+          <h2 className="text-2xl font-bold mb-4">
+            ⚠️ 곧 상할 재료
+          </h2>
+
+          <div className="text-gray-400">
+            임박한 재료가 없습니다 👍
+          </div>
+
+        </div>
+
+        {/* ========================= */}
         {/* 추천 레시피 */}
-        <h2 className="text-lg font-bold mt-6 mb-3">추천 레시피</h2>
+        {/* ========================= */}
+        <div>
 
-        <div className="grid gap-4">
-          {["김치볶음밥", "계란말이", "당근 볶음"].map(
-            (recipe, idx) => (
-              <div
-                key={idx}
-                className="bg-white p-4 rounded-xl shadow-sm"
-              >
-                <p className="font-semibold">{recipe}</p>
-                <p className="text-sm text-gray-400 mt-1">
-                  냉장고 재료 기반 추천
-                </p>
-              </div>
-            )
-          )}
+          {/* 헤더 */}
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              mb-5
+            "
+          >
+
+            <h2 className="text-2xl font-bold">
+              🍳 추천 레시피
+            </h2>
+
+            <button
+              onClick={() =>
+                navigate("/recipe")
+              }
+              className="
+                text-orange-400
+                font-semibold
+                hover:text-orange-500
+                transition
+              "
+            >
+              전체 보기 →
+            </button>
+
+          </div>
+
+          {/* 가로 스크롤 */}
+          <div
+            className="
+              flex
+              gap-5
+              overflow-x-auto
+              pb-2
+              scrollbar-hide
+            "
+          >
+
+            {recommendedRecipes.map(
+              (recipe) => (
+
+                <div
+                  key={recipe.rcpSeq}
+                  onClick={() => {
+                    fetchRecipeDetail(
+                      recipe.rcpSeq
+                    );
+                  }}
+                  className="
+                    min-w-[260px]
+                    max-w-[260px]
+                    bg-white
+                    rounded-3xl
+                    overflow-hidden
+                    shadow-sm
+                    hover:shadow-xl
+                    transition
+                    cursor-pointer
+                    flex-shrink-0
+                  "
+                >
+
+                  {/* 이미지 */}
+                  <div
+                    className="
+                      h-44
+                      bg-gray-100
+                    "
+                  >
+
+                    <img
+                      src={
+                        recipe.images?.main
+                      }
+                      alt={
+                        recipe.recipeName
+                      }
+                      className="
+                        w-full
+                        h-full
+                        object-cover
+                      "
+                    />
+
+                  </div>
+
+                  {/* 내용 */}
+                  <div className="p-4">
+
+                    {/* 카테고리 */}
+                    <div
+                      className="
+                        text-xs
+                        text-orange-400
+                        font-semibold
+                        mb-2
+                      "
+                    >
+                      {
+                        recipe.recipeCategory
+                      }
+                    </div>
+
+                    {/* 제목 */}
+                    <h3
+                      className="
+                        font-bold
+                        text-lg
+                        line-clamp-1
+                        mb-2
+                      "
+                    >
+                      {
+                        recipe.recipeName
+                      }
+                    </h3>
+
+                    {/* 설명 */}
+                    <p
+                      className="
+                        text-sm
+                        text-gray-400
+                        line-clamp-2
+                      "
+                    >
+                      냉장고 재료 기반 추천
+                    </p>
+
+                    {/* 하단 */}
+                    <div
+                      className="
+                        flex
+                        items-center
+                        justify-between
+                        mt-4
+                      "
+                    >
+
+                      <div
+                        className="
+                          text-sm
+                          text-gray-500
+                        "
+                      >
+                        🔥{" "}
+                        {
+                          recipe
+                            .nutrition
+                            ?.calories || 0
+                        }
+                        kcal
+                      </div>
+
+                      <div
+                        className="
+                          text-sm
+                          text-gray-500
+                        "
+                      >
+                        {
+                          recipe.cookingMethod
+                        }
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              )
+            )}
+
+          </div>
+
         </div>
+
       </div>
 
-      {/* 모달 */}
-      {openExpire && (
-        <ExpireModal
-          items={items}
-          onClose={() => setOpenExpire(false)}
+      {/* 상세 모달 */}
+      {openDetail && (
+
+        <RecipeDetailModal
+          recipe={selectedRecipe}
+          onClose={() =>
+            setOpenDetail(false)
+          }
+          onStartCooking={(recipe) => {
+
+            console.log(recipe);
+
+          }}
         />
+
       )}
 
-      {openRecipe && (
-        <RecipeModal onClose={() => setOpenRecipe(false)} />
+      {/* 유통기한 모달 */}
+      {openExpire && (
+
+        <ExpireModal
+          items={[]}
+          onClose={() =>
+            setOpenExpire(false)
+          }
+        />
+
       )}
+
     </div>
   );
 }

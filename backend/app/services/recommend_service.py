@@ -1,6 +1,6 @@
 import app.utils.decay as decay
     
-def calculate_score(recipe, weight_map):
+async def calculate_score(recipe, weight_map):
     score = 0.0
     for ingredient in recipe["ingredients"]:
         # 유저가 가진 재료면 weight 더하기
@@ -9,7 +9,7 @@ def calculate_score(recipe, weight_map):
         
     return score
 
-def recommend(ingredients, recipes):
+async def recommend(ingredients, recipes):
     # 가중치 계산
     weighted = decay.get_expiry_weights(ingredients)
 

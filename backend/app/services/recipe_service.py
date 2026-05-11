@@ -21,7 +21,7 @@ BASE_URL = "http://openapi.foodsafetykorea.go.kr/api"
 # =========================
 # API 호출
 # =========================
-def fetch_recipe_data(start_idx=1, end_idx=1000):
+async def fetch_recipe_data(start_idx=1, end_idx=1000):
 
     url = (
         f"{BASE_URL}/"
@@ -31,7 +31,7 @@ def fetch_recipe_data(start_idx=1, end_idx=1000):
         f"{end_idx}"
     )
 
-    response = requests.get(url)
+    response = await requests.get(url)
 
     response.raise_for_status()
 
@@ -48,17 +48,17 @@ def fetch_recipe_data(start_idx=1, end_idx=1000):
 # =========================
 # 레시피 저장
 # =========================
-def import_recipes():
+async def import_recipes():
 
     inserted_count = 0
 
-    recipes = fetch_recipe_data(1001, 2000)
+    recipes = await fetch_recipe_data(1001, 2000)
 
     for recipe in recipes:
 
         rcp_seq = recipe.get("RCP_SEQ")
 
-        exists = recipe_collection.find_one({
+        exists = await recipe_collection.find_one({
             "rcpSeq": rcp_seq
         })
 
@@ -67,7 +67,7 @@ def import_recipes():
 
         document = transform_recipe(recipe)
 
-        recipe_collection.insert_one(document)
+        await recipe_collection.insert_one(document)
 
         inserted_count += 1
 
@@ -77,7 +77,7 @@ def import_recipes():
 # =========================
 # 전체 조회 + 검색 + 카테고리
 # =========================
-def get_recipes(
+async def get_recipes(
     page: int = 1,
     size: int = 10,
 
@@ -123,7 +123,7 @@ def get_recipes(
     # =========================
     # total count
     # =========================
-    total = recipe_collection.count_documents(
+    total = await recipe_collection.count_documents(
         query
     )
 
@@ -144,14 +144,10 @@ def get_recipes(
     # =========================
     # recipes 조회
     # =========================
-    recipes = list(
-        recipe_collection.find(
-            query,
-            projection
-        )
-        .skip(skip)
-        .limit(size)
-    )
+    recipes = await recipe_collection.find(
+    query,
+    projection
+).skip(skip).limit(size).to_list(length=size)
 
     total_pages = (
         total + size - 1
@@ -169,15 +165,15 @@ def get_recipes(
 # =========================
 # 전체 삭제
 # =========================
-def delete_all_recipes():
+async def delete_all_recipes():
 
-    result = recipe_collection.delete_many({})
+    result = await recipe_collection.delete_many({})
 
     return result.deleted_count
 
-def get_recipe_detail(rcp_seq: str):
+async def get_recipe_detail(rcp_seq: str):
 
-    recipe = recipe_collection.find_one(
+    recipe = await recipe_collection.find_one(
         {"rcpSeq": rcp_seq},
         {"_id": 0}
     )

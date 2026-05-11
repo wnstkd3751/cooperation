@@ -7,7 +7,7 @@ import re
 import re
 
 
-def parse_ingredients(raw_text: str):
+async def parse_ingredients(raw_text: str):
 
     ingredients = []
 
@@ -64,7 +64,7 @@ def parse_ingredients(raw_text: str):
 # =========================
 # 조리 순서 파싱
 # =========================
-def parse_steps(recipe_data):
+async def parse_steps(recipe_data):
 
     steps = []
 
@@ -91,7 +91,7 @@ def parse_steps(recipe_data):
 # =========================
 # 해시태그 파싱
 # =========================
-def parse_hashtags(raw_hashtag):
+async def parse_hashtags(raw_hashtag):
 
     if not raw_hashtag:
         return []
@@ -106,7 +106,7 @@ def parse_hashtags(raw_hashtag):
 # =========================
 # MongoDB 문서 변환
 # =========================
-def transform_recipe(recipe):
+async def transform_recipe(recipe):
 
     document = {
 

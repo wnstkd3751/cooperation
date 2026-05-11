@@ -1,4 +1,4 @@
-def calculate_expiry_weight(days_left):
+async def calculate_expiry_weight(days_left):
 
     # days_left가 0 이하면 → 1.0 반환
     if days_left <= 0:
@@ -13,7 +13,7 @@ def calculate_expiry_weight(days_left):
         result = (30 - days_left) / 30
         return round(result,2)
 
-def get_expiry_weights(ingredients):
+async def get_expiry_weights(ingredients):
 
     # 결과를 담을 빈 리스트 만들기
     result = []
@@ -22,7 +22,7 @@ def get_expiry_weights(ingredients):
     for item in ingredients:
 
         # 방금 만든 함수로 가중치 계산
-        weight = calculate_expiry_weight(item["days_left"])
+        weight = await calculate_expiry_weight(item["days_left"])
 
         # item에 weight 추가
         item["weight"] = weight
