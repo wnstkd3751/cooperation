@@ -1,7 +1,7 @@
 import re
 
 
-async def parse_receipt_text(lines):
+def parse_receipt_text(lines):
 
     items = []
 

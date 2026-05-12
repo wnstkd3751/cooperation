@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 
 import axios from "axios";
 
-import { useNavigate } from "react-router-dom";
-
 import Header from "../components/Header";
 import ExpireModal from "../components/ExpireModal";
 import RecipeDetailModal from "../components/RecipeDetailModal";
 
-export default function Home() {
+import IngredientSelectModal from "../components/IngredientSelectModal";
+import IngredientRecipeModal from "../components/IngredientRecipeModal";
+import RecommendedRecipeCard from "../components/RecommendedRecipeCard";
 
-  const navigate = useNavigate();
+export default function Home() {
 
   const [openExpire, setOpenExpire] =
     useState(false);
@@ -29,6 +29,37 @@ export default function Home() {
 
   const [openDetail, setOpenDetail] =
     useState(false);
+
+  // 추천 레시피 모달
+  const [
+    openRecommendModal,
+    setOpenRecommendModal
+  ] = useState(false);
+
+  const [
+    ingredientRecipes,
+    setIngredientRecipes
+  ] = useState([]);
+
+  // 임박 재료 선택 모달
+  const [
+    openIngredientModal,
+    setOpenIngredientModal
+  ] = useState(false);
+
+  // 선택된 재료
+  const [
+    selectedIngredient,
+    setSelectedIngredient
+  ] = useState("");
+
+  // 임박 재료 목록
+  const expiringIngredients = [
+    "당근",
+    "양파",
+    "감자",
+    "두부",
+  ];
 
   // =========================
   // 추천 레시피 조회
@@ -58,7 +89,7 @@ export default function Home() {
     };
 
   // =========================
-  // 상세 조회
+  // 레시피 상세 조회
   // =========================
   const fetchRecipeDetail = async (
     rcpSeq
@@ -88,6 +119,48 @@ export default function Home() {
   };
 
   // =========================
+  // 재료 기반 추천 조회
+  // =========================
+  const fetchIngredientRecipes =
+    async (ingredient) => {
+
+      try {
+
+        console.log(
+          "선택된 재료:",
+          ingredient
+        );
+
+        const searchType = "recipe";
+
+        const response =
+  await axios.get(
+          `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes?keyword=${ingredient}&page=1&size=10&searchType=${searchType}`
+  );
+
+        setIngredientRecipes(
+          response.data.recipes || []
+        );
+
+        setSelectedIngredient(
+          ingredient
+        );
+
+        setOpenIngredientModal(false);
+
+        setOpenRecommendModal(true);
+
+      } catch (error) {
+
+        console.error(
+          "재료 추천 조회 실패",
+          error
+        );
+
+      }
+    };
+
+  // =========================
   // 최초 로딩
   // =========================
   useEffect(() => {
@@ -102,10 +175,14 @@ export default function Home() {
 
       {/* 헤더 */}
       <Header
-        onOpenExpire={() =>
-          setOpenExpire(true)
-        }
-      />
+  onOpenExpire={() =>
+    setOpenExpire(true)
+  }
+
+  onIngredientClick={
+    fetchIngredientRecipes
+  }
+/>
 
       <div className="p-5 pb-28">
 
@@ -138,7 +215,7 @@ export default function Home() {
 
           <button
             onClick={() =>
-              navigate("/recipe")
+              setOpenIngredientModal(true)
             }
             className="
               text-red-400
@@ -163,9 +240,7 @@ export default function Home() {
 
         </div>
 
-        {/* ========================= */}
         {/* 추천 레시피 */}
-        {/* ========================= */}
         <div>
 
           {/* 헤더 */}
@@ -182,20 +257,6 @@ export default function Home() {
               🍳 추천 레시피
             </h2>
 
-            <button
-              onClick={() =>
-                navigate("/recipe")
-              }
-              className="
-                text-orange-400
-                font-semibold
-                hover:text-orange-500
-                transition
-              "
-            >
-              전체 보기 →
-            </button>
-
           </div>
 
           {/* 가로 스크롤 */}
@@ -209,146 +270,54 @@ export default function Home() {
             "
           >
 
-            {recommendedRecipes.map(
-              (recipe) => (
+            {recommendedRecipes.map((recipe) => (
 
-                <div
-                  key={recipe.rcpSeq}
-                  onClick={() => {
-                    fetchRecipeDetail(
-                      recipe.rcpSeq
-                    );
-                  }}
-                  className="
-                    min-w-[260px]
-                    max-w-[260px]
-                    bg-white
-                    rounded-3xl
-                    overflow-hidden
-                    shadow-sm
-                    hover:shadow-xl
-                    transition
-                    cursor-pointer
-                    flex-shrink-0
-                  "
-                >
+              <RecommendedRecipeCard
+                key={recipe.rcpSeq}
+                recipe={recipe}
+                onClick={() => {
+                  fetchRecipeDetail(
+                    recipe.rcpSeq
+                  );
+                }}
+              />
 
-                  {/* 이미지 */}
-                  <div
-                    className="
-                      h-44
-                      bg-gray-100
-                    "
-                  >
-
-                    <img
-                      src={
-                        recipe.images?.main
-                      }
-                      alt={
-                        recipe.recipeName
-                      }
-                      className="
-                        w-full
-                        h-full
-                        object-cover
-                      "
-                    />
-
-                  </div>
-
-                  {/* 내용 */}
-                  <div className="p-4">
-
-                    {/* 카테고리 */}
-                    <div
-                      className="
-                        text-xs
-                        text-orange-400
-                        font-semibold
-                        mb-2
-                      "
-                    >
-                      {
-                        recipe.recipeCategory
-                      }
-                    </div>
-
-                    {/* 제목 */}
-                    <h3
-                      className="
-                        font-bold
-                        text-lg
-                        line-clamp-1
-                        mb-2
-                      "
-                    >
-                      {
-                        recipe.recipeName
-                      }
-                    </h3>
-
-                    {/* 설명 */}
-                    <p
-                      className="
-                        text-sm
-                        text-gray-400
-                        line-clamp-2
-                      "
-                    >
-                      냉장고 재료 기반 추천
-                    </p>
-
-                    {/* 하단 */}
-                    <div
-                      className="
-                        flex
-                        items-center
-                        justify-between
-                        mt-4
-                      "
-                    >
-
-                      <div
-                        className="
-                          text-sm
-                          text-gray-500
-                        "
-                      >
-                        🔥{" "}
-                        {
-                          recipe
-                            .nutrition
-                            ?.calories || 0
-                        }
-                        kcal
-                      </div>
-
-                      <div
-                        className="
-                          text-sm
-                          text-gray-500
-                        "
-                      >
-                        {
-                          recipe.cookingMethod
-                        }
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              )
-            )}
+            ))}
 
           </div>
 
         </div>
 
       </div>
+
+      {/* 재료 선택 모달 */}
+      <IngredientSelectModal
+        open={openIngredientModal}
+        ingredients={expiringIngredients}
+        onClose={() =>
+          setOpenIngredientModal(false)
+        }
+        onSelect={fetchIngredientRecipes}
+      />
+
+      {/* 재료 추천 모달 */}
+      <IngredientRecipeModal
+        open={openRecommendModal}
+        ingredient={selectedIngredient}
+        recipes={ingredientRecipes}
+        onClose={() =>
+          setOpenRecommendModal(false)
+        }
+        onSelectRecipe={(recipe) => {
+
+          setOpenRecommendModal(false);
+
+          fetchRecipeDetail(
+            recipe.rcpSeq
+          );
+
+        }}
+      />
 
       {/* 상세 모달 */}
       {openDetail && (
@@ -371,7 +340,7 @@ export default function Home() {
       {openExpire && (
 
         <ExpireModal
-          items={[]}
+          items={expiringIngredients}
           onClose={() =>
             setOpenExpire(false)
           }
