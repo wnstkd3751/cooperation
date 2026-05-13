@@ -131,12 +131,14 @@ export default function Home() {
           ingredient
         );
 
-        const searchType = "recipe";
+        const searchType = "ingredient";
 
         const response =
   await axios.get(
           `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes?keyword=${ingredient}&page=1&size=10&searchType=${searchType}`
   );
+
+        console.log(response.data)
 
         setIngredientRecipes(
           response.data.recipes || []
