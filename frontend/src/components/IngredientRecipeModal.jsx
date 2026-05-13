@@ -1,10 +1,14 @@
 export default function IngredientRecipeModal({
   open,
-  selectedIngredient,
-  ingredientRecipes = [],
+  ingredient,
+  recipes = [],
   onClose,
   onRecipeClick,
 }) {
+
+
+  console.log(ingredient)
+  console.log(recipes)
 
   if (!open) return null;
 
@@ -46,7 +50,7 @@ export default function IngredientRecipeModal({
         >
 
           <h2 className="text-2xl font-bold">
-            {selectedIngredient} 레시피 추천
+            {ingredient} 레시피 추천
           </h2>
 
           <button
@@ -72,7 +76,7 @@ export default function IngredientRecipeModal({
           "
         >
 
-          {ingredientRecipes.map((recipe) => (
+          {recipes.map((recipe) => (
 
             <div
               key={recipe.rcpSeq}

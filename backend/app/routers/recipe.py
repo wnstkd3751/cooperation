@@ -34,9 +34,7 @@ async def get_recipe_api(
     keyword: Optional[str] = None,
     searchType: Optional[str] = None
 ):
-    print("카테고리:", category)
-    print("키워드:", keyword)
-    print("검색 타입:", searchType)
+   
 
     return await recipe_service.get_recipes(
         page=page,

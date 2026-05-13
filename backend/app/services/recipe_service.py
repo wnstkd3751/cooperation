@@ -86,6 +86,8 @@ async def get_recipes(
     searchType: str = None
 ):
 
+    
+
     skip = (page - 1) * size
 
     # =========================
@@ -98,9 +100,6 @@ async def get_recipes(
 
         query["recipeCategory"] = category
 
-    # =========================
-    # 검색
-    # =========================
 
     if keyword:
 
