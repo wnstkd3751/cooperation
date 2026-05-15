@@ -1,5 +1,6 @@
 from db.mongo import recipe_collection
 import app.utils.decay as decay
+import app.ml.predictor as predictor
     
 async def calculate_score(recipe, weight_map):
     score = 0.0
@@ -20,6 +21,10 @@ async def calculate_score(recipe, weight_map):
 
     # 매칭률 계산
     match_ratio = matched / total
+
+    # pkl 점수 추가 (나중에 pkl 생기면 주석 해제)
+    # ml_score = predictor.predict(ingredient)
+    # score += ml_score
 
     # 최종 점수
     return score * match_ratio
