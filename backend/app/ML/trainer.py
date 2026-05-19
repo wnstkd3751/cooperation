@@ -1,7 +1,7 @@
 import pickle
 from sklearn.ensemble import RandomForestClassifier
 from db.mongo import db
-import app.utils.features as features
+import app.ML.features as features
 
 def train():
     # DB에서 피드백 데이터 가져오기

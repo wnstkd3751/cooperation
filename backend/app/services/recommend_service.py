@@ -1,15 +1,15 @@
 from db.mongo import recipe_collection
 import app.utils.decay as decay
-import app.ml.predictor as predictor
+# import app.ML.predictor as predictor
     
-async def calculate_score(recipe, weight_map):
+def calculate_score(recipe, weight_map):
     score = 0.0
     matched = 0
 
     for ingredient in recipe["ingredients"]:
         # 유저가 가진 재료면 weight 더하기
         # 없는 재료면 0 더하기
-        weight = weight_map.get(ingredient, 0)
+        weight = weight_map.get(ingredient["name"], 0)
         score += weight
         
         if weight != 0:
