@@ -1,8 +1,11 @@
-import anthropic
+import anthropic, os
+from dotenv import load_dotenv
 from app.ai.prompts import SYSTEM_PROMPT
 import app.services.recommend_service as recommend_service
 
-client = anthropic.Anthropic(api_key="my_key")
+load_dotenv()
+
+client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 def chat(user_message, ingredients):
     recipes = recommend_service.recommend(ingredients)
