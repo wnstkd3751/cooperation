@@ -9,6 +9,6 @@ class ChatRequest(BaseModel):
     ingredients: list
 
 @router.post("/chat")
-def chat(request: ChatRequest):
-    answer = llm_service.chat(request.user_message, request.ingredients)
+async def chat(request: ChatRequest):
+    answer = await llm_service.chat(request.user_message, request.ingredients)
     return {"answer": answer}

@@ -29,9 +29,9 @@ def calculate_score(recipe, weight_map):
     # 최종 점수
     return score * match_ratio
 
-def recommend(ingredients):
+async def recommend(ingredients):
     # DB에서 레시피 가져오기
-    recipes = list(recipe_collection.find({}))
+    recipes = await recipe_collection.find({}).to_list(100)
 
     # 가중치 계산
     weighted = decay.get_expiry_weights(ingredients)

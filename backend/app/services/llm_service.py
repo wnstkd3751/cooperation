@@ -7,8 +7,8 @@ import app.services.recommend_service as recommend_service
 
 # client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-def chat(user_message, ingredients):
-    recipes = recommend_service.recommend(ingredients)
+async def chat(user_message, ingredients):
+    recipes = await recommend_service.recommend(ingredients)
 
     context = ""
     for recipe in recipes[:3]:
