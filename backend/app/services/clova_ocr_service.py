@@ -5,8 +5,8 @@ import json
 from fastapi import UploadFile
 from app.utils.parser import parse_receipt_text
 
-CLOVA_SECRET_KEY = "YOUR_SECRET_KEY"
-CLOVA_API_URL = "YOUR_API_URL"
+CLOVA_SECRET_KEY = "dndCVEZ4QkloZXlxRHdvTEdZQlRMenF6aW1oZHhheEg="
+CLOVA_API_URL = "https://gm9ptrbyjp.apigw.ntruss.com/custom/v1/53373/c8f405cbf1381a8cb07c2cc0deac3d32afb0517a4be0e323a81f739b1e5ad257/general"
 
 
 async def process_clova_ocr(image: UploadFile):

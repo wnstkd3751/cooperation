@@ -13,15 +13,15 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 # 회원가입
 @router.post("/signup")
-def signup(user: SignupRequest):
+async def signup(user: SignupRequest):
 
     # 아이디 중복 체크
-    existing_user = user_service.user_collection.find_one({"id": user.id})
+    existing_user = await user_service.user_collection.find_one({"id": user.id})
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다")
 
     # 유저 생성
-    user_id = user_service.create_user(user)
+    user_id = await user_service.create_user(user)
 
     return {
         "message": "회원가입 완료",
