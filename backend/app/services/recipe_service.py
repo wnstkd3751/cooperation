@@ -1,4 +1,4 @@
-import requests
+import httpx
 
 from db.mongo import recipe_collection
 
@@ -11,11 +11,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+
 API_KEY = os.getenv("API_KEY")
 
 SERVICE_ID = "COOKRCP01"
 
 BASE_URL = "http://openapi.foodsafetykorea.go.kr/api"
+
 
 
 # =========================
@@ -30,8 +32,8 @@ async def fetch_recipe_data(start_idx=1, end_idx=1000):
         f"{start_idx}/"
         f"{end_idx}"
     )
-
-    response = await requests.get(url)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
 
     response.raise_for_status()
 

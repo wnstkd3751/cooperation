@@ -7,7 +7,7 @@ import re
 import re
 
 
-async def parse_ingredients(raw_text: str):
+def parse_ingredients(raw_text: str):
 
     ingredients = []
 
@@ -64,7 +64,7 @@ async def parse_ingredients(raw_text: str):
 # =========================
 # 조리 순서 파싱
 # =========================
-async def parse_steps(recipe_data):
+def parse_steps(recipe_data):
 
     steps = []
 
@@ -91,7 +91,7 @@ async def parse_steps(recipe_data):
 # =========================
 # 해시태그 파싱
 # =========================
-async def parse_hashtags(raw_hashtag):
+def parse_hashtags(raw_hashtag):
 
     if not raw_hashtag:
         return []
