@@ -6,7 +6,7 @@ ALGORITHM = "HS256"
 
 
 # access token
-async def create_access_token(data: dict):
+def create_access_token(data: dict):
     to_encode = data.copy()
 
     expire = datetime.utcnow() + timedelta(hours=1)
@@ -23,7 +23,7 @@ async def create_access_token(data: dict):
 
 
 # refresh token
-async def create_refresh_token(data: dict):
+def create_refresh_token(data: dict):
     to_encode = data.copy()
 
     expire = datetime.utcnow() + timedelta(days=7)
@@ -38,7 +38,7 @@ async def create_refresh_token(data: dict):
         algorithm=ALGORITHM
     )
 
-async def decode_token(token: str):
+def decode_token(token: str):
     try:
         payload = jwt.decode(
             token,

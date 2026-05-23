@@ -106,7 +106,7 @@ def parse_hashtags(raw_hashtag):
 # =========================
 # MongoDB 문서 변환
 # =========================
-async def transform_recipe(recipe):
+def transform_recipe(recipe):
 
     document = {
 
