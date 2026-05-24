@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL =
-  "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev";
+const BASE_URL = import.meta.env.BASE_URL;
+
 
 // axios 인스턴스 생성
 const api = axios.create({

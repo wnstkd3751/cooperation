@@ -1,8 +1,10 @@
 import axios from "axios";
 
-const BASE_URL = "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const login = async (data) => {
+
+  console.log(BASE_URL)
 
   const res = await axios.post(`${BASE_URL}/auth/login`, data);
 
