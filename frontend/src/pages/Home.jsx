@@ -5,6 +5,7 @@ import axios from "axios";
 import Header from "../components/Header";
 import ExpireModal from "../components/ExpireModal";
 import RecipeDetailModal from "../components/RecipeDetailModal";
+import CookingModal from "../components/CookingModal";
 
 import IngredientSelectModal from "../components/IngredientSelectModal";
 import IngredientRecipeModal from "../components/IngredientRecipeModal";
@@ -29,6 +30,9 @@ export default function Home() {
 
   const [openDetail, setOpenDetail] =
     useState(false);
+
+  const [cookingRecipe, setCookingRecipe] =
+    useState(null);
 
   // 추천 레시피 모달
   const [
@@ -61,6 +65,12 @@ export default function Home() {
     "두부",
   ];
 
+    // 요리 모달
+  const [openCooking, setOpenCooking] =
+    useState(false);
+
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   // =========================
   // 추천 레시피 조회
   // =========================
@@ -69,10 +79,14 @@ export default function Home() {
 
       try {
 
+        const url = BASE_URL + "/recipes?page=1&size=10"
+
         const response =
           await axios.get(
-            "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes?page=1&size=10"
+            url
           );
+
+        console.log(response)
 
         setRecommendedRecipes(
           response.data.recipes || []
@@ -88,6 +102,7 @@ export default function Home() {
       }
     };
 
+
   // =========================
   // 레시피 상세 조회
   // =========================
@@ -97,10 +112,14 @@ export default function Home() {
 
     try {
 
+      const url = BASE_URL + '/recipes/' + rcpSeq
+
       const response =
         await axios.get(
-          `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes/${rcpSeq}`
+          url
         );
+      
+        console.log(response)
 
       setSelectedRecipe(
         response.data
@@ -118,6 +137,7 @@ export default function Home() {
     }
   };
 
+
   // =========================
   // 재료 기반 추천 조회
   // =========================
@@ -132,13 +152,14 @@ export default function Home() {
         );
 
         const searchType = "ingredient";
+        const url = BASE_URL + '/recipes?keyword=' + ingredient + '&page=1&size=10&searchType=' + searchType
 
         const response =
   await axios.get(
-          `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes?keyword=${ingredient}&page=1&size=10&searchType=${searchType}`
+          url
   );
 
-        console.log(response.data)
+        console.log(response)
 
         setIngredientRecipes(
           response.data.recipes || []
@@ -321,6 +342,17 @@ export default function Home() {
         }}
       />
 
+      {openCooking && (
+
+        <CookingModal
+          recipe={cookingRecipe}
+          onClose={() =>
+            setOpenCooking(false)
+          }
+        />
+
+      )}
+
       {/* 상세 모달 */}
       {openDetail && (
 
@@ -332,6 +364,10 @@ export default function Home() {
           onStartCooking={(recipe) => {
 
             console.log(recipe);
+
+            setCookingRecipe(recipe);
+
+            setOpenCooking(true);
 
           }}
         />

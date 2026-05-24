@@ -55,6 +55,7 @@ export default function Recipe() {
   // 무한 스크롤 observer
   const observerRef = useRef(null);
 
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   // =========================
   // 레시피 가져오기
   // =========================
@@ -65,7 +66,7 @@ export default function Recipe() {
     setLoading(true);
 
     let url =
-      `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes?page=${page}&size=16`;
+      BASE_URL + `/recipes?page=${page}&size=16`;
 
     // 카테고리
     if (category !== "전체") {
@@ -127,8 +128,10 @@ export default function Recipe() {
 
     try {
 
+      const url = BASE_URL + '/recipes/' + rcpSeq
+
       const response = await axios.get(
-        `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes/${rcpSeq}`
+        url
       );
 
       setSelectedRecipe(response.data);

@@ -9,6 +9,8 @@ export default function AddFoodModal({ onClose, onSuccess }) {
   // 🔥 OCR 결과 배열
   const [items, setItems] = useState([]);
 
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   // =========================
   // OCR 요청
   // =========================
@@ -21,8 +23,11 @@ export default function AddFoodModal({ onClose, onSuccess }) {
 
     try {
 
+      const url = BASE_URL + "/api/ocr/clova"
+
       const res = await axios.post(
-        "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/api/ocr/clova",
+    
+        url,
         formData,
         {
           headers: {

@@ -1,30 +1,33 @@
 // components/Header.jsx
 
 import { useState } from "react";
+import ChatBot from "./ChatBot";
 
 export default function Header({
-  
   onIngredientClick,
 }) {
 
   const [openAlarm, setOpenAlarm] =
     useState(false);
 
+  const [openChat, setOpenChat] =
+    useState(false);
 
-    const ei = [
-  {
-    name: "당근",
-    dday: 1,
-  },
-  {
-    name: "양파",
-    dday: 2,
-  },
-  {
-    name: "두부",
-    dday: 1,
-  },
-];
+  const ei = [
+    {
+      name: "당근",
+      dday: 1,
+    },
+    {
+      name: "양파",
+      dday: 2,
+    },
+    {
+      name: "두부",
+      dday: 1,
+    },
+  ];
+
   return (
 
     <div
@@ -55,15 +58,6 @@ export default function Header({
           "
         >
 
-          <img
-            src="/img/profile.png"
-            className="
-              w-10
-              h-10
-              rounded-full
-            "
-          />
-
           <div>
 
             <p
@@ -83,170 +77,195 @@ export default function Header({
 
         </div>
 
-        {/* 알림 */}
-        <div className="relative">
+        {/* 오른쪽 버튼들 */}
+        <div className="flex items-center gap-4">
 
-          <div
-            className="
-              relative
-              cursor-pointer
-              text-2xl
-            "
-            onClick={() =>
-              setOpenAlarm(
-                !openAlarm
-              )
-            }
-          >
-
-            🔔
-
-            {ei.length >
-              0 && (
-
-              <span
-                className="
-                  absolute
-                  -top-2
-                  -right-2
-                  bg-red-400
-                  text-xs
-                  px-1.5
-                  py-0.5
-                  rounded-full
-                "
-              >
-                {
-                  ei.length
-                }
-              </span>
-
-            )}
-
-          </div>
-
-          {/* 드롭다운 */}
-          {openAlarm && (
+          {/* 챗봇 */}
+          <div className="relative">
 
             <div
               className="
-                absolute
-                right-0
-                mt-3
-                w-80
-                bg-white
-                rounded-3xl
-                shadow-2xl
-                p-4
-                z-50
-                text-black
+                cursor-pointer
+                text-2xl
               "
+              onClick={() =>
+                setOpenChat(!openChat)
+              }
+            >
+              💬
+            </div>
+
+            
+          </div>
+
+          {/* 알림 */}
+          <div className="relative">
+
+            <div
+              className="
+                relative
+                cursor-pointer
+                text-2xl
+              "
+              onClick={() =>
+                setOpenAlarm(
+                  !openAlarm
+                )
+              }
             >
 
-              {/* 제목 */}
+              🔔
+
+              {ei.length > 0 && (
+
+                <span
+                  className="
+                    absolute
+                    -top-2
+                    -right-2
+                    bg-red-400
+                    text-xs
+                    px-1.5
+                    py-0.5
+                    rounded-full
+                  "
+                >
+                  {ei.length}
+                </span>
+
+              )}
+
+            </div>
+
+            {/* 드롭다운 */}
+            {openAlarm && (
+
               <div
                 className="
-                  font-bold
-                  text-lg
-                  mb-4
+                  absolute
+                  right-0
+                  mt-3
+                  w-80
+                  bg-white
+                  rounded-3xl
+                  shadow-2xl
+                  p-4
+                  z-50
+                  text-black
                 "
               >
-                ⚠️ 유통기한 임박
-              </div>
 
-              {/* 목록 */}
-              <div className="space-y-3">
+                {/* 제목 */}
+                <div
+                  className="
+                    font-bold
+                    text-lg
+                    mb-4
+                  "
+                >
+                  ⚠️ 유통기한 임박
+                </div>
 
-                {ei.length ===
-                0 ? (
+                {/* 목록 */}
+                <div className="space-y-3">
 
-                  <div
-                    className="
-                      text-sm
-                      text-gray-400
-                      text-center
-                      py-6
-                    "
-                  >
-                    임박 재료가 없습니다 👍
-                  </div>
+                  {ei.length === 0 ? (
 
-                ) : (
+                    <div
+                      className="
+                        text-sm
+                        text-gray-400
+                        text-center
+                        py-6
+                      "
+                    >
+                      임박 재료가 없습니다 👍
+                    </div>
 
-                  ei.map(
-                    (item) => (
+                  ) : (
 
-                      <div
-                        key={item.name}
-                        onClick={() => {
+                    ei.map(
+                      (item) => (
 
-                          setOpenAlarm(
-                            false
-                          );
+                        <div
+                          key={item.name}
+                          onClick={() => {
 
-                          onIngredientClick(
-                            item.name
-                          );
+                            setOpenAlarm(
+                              false
+                            );
 
-                        }}
-                        className="
-                          bg-orange-50
-                          hover:bg-orange-100
-                          rounded-2xl
-                          px-4
-                          py-4
-                          cursor-pointer
-                          transition
-                          flex
-                          justify-between
-                          items-center
-                        "
-                      >
+                            onIngredientClick(
+                              item.name
+                            );
 
-                        {/* 왼쪽 */}
-                        <div>
+                          }}
+                          className="
+                            bg-orange-50
+                            hover:bg-orange-100
+                            rounded-2xl
+                            px-4
+                            py-4
+                            cursor-pointer
+                            transition
+                            flex
+                            justify-between
+                            items-center
+                          "
+                        >
 
-                          <div className="font-semibold">
-                            🥕 {item.name}
+                          <div>
+
+                            <div className="font-semibold">
+                              🥕 {item.name}
+                            </div>
+
+                            <div
+                              className="
+                                text-sm
+                                text-gray-500
+                              "
+                            >
+                              {item.dday}
+                              일 남음
+                            </div>
+
                           </div>
 
                           <div
                             className="
                               text-sm
-                              text-gray-500
+                              text-orange-400
+                              font-semibold
                             "
                           >
-                            {
-                              item.dday
-                            }
-                            일 남음
+                            레시피 →
                           </div>
 
                         </div>
 
-                        {/* 오른쪽 */}
-                        <div
-                          className="
-                            text-sm
-                            text-orange-400
-                            font-semibold
-                          "
-                        >
-                          레시피 →
-                        </div>
-
-                      </div>
-
+                      )
                     )
-                  )
 
-                )}
+                  )}
+
+                </div>
 
               </div>
 
-            </div>
+            )}
 
-          )}
+             {openChat && (
+
+        <ChatBot
+          onClose={() =>
+            setOpenChat(false)
+          }
+        />
+
+      )}
+
+          </div>
 
         </div>
 
