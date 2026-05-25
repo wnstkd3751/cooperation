@@ -7,8 +7,7 @@ load_dotenv()
 
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-async def chat(user_message, ingredients, conversation_history=[]):
-    recipes = await recommend_service.recommend(ingredients)
+async def chat(user_message, ingredients, candidate_recipes, conversation_history=[]):
 
     # 재료 정보 + 추천 레시피 컨텍스트
     context = "=== 유저 보유 재료 ===\n"
@@ -16,7 +15,7 @@ async def chat(user_message, ingredients, conversation_history=[]):
         context += f"- {ingredient['name']} (유통기한: {ingredient['expire_date']})\n"
 
     context += "\n=== 추천 후보 레시피 ===\n"
-    for recipe in recipes[:3]:
+    for recipe in candidate_recipes[:30]:
         context += f"- {recipe['recipeName']} (점수: {recipe['score']})\n"
 
     # 대화 기록 + 현재 메시지
