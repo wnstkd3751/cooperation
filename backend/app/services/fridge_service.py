@@ -15,6 +15,8 @@ async def create_item(item, user_id: str):
 
 async def get_items(user_id: str):
     items = []
+
+    
     async for item in fridge_collection.find({"user_id": user_id}):
         item["item_id"] = str(item["_id"])
         del item["_id"]
