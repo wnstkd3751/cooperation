@@ -9,6 +9,7 @@ import RecipeDetailModal from "../components/RecipeDetailModal";
 import IngredientSelectModal from "../components/IngredientSelectModal";
 import IngredientRecipeModal from "../components/IngredientRecipeModal";
 import RecommendedRecipeCard from "../components/RecommendedRecipeCard";
+import CookingModal from "../components/CookingModal";
 
 export default function Home() {
 
@@ -61,6 +62,15 @@ export default function Home() {
     "두부",
   ];
 
+  // 요리 모달
+    const [openCooking, setOpenCooking] =
+      useState(false);
+  
+    const [cookingRecipe, setCookingRecipe] =
+      useState(null);
+
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   // =========================
   // 추천 레시피 조회
   // =========================
@@ -71,7 +81,7 @@ export default function Home() {
 
         const response =
           await axios.get(
-            "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes?page=1&size=10"
+            BASE_URL + "/recipes?page=1&size=10"
           );
 
         setRecommendedRecipes(
@@ -99,7 +109,7 @@ export default function Home() {
 
       const response =
         await axios.get(
-          `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes/${rcpSeq}`
+          BASE_URL + "/recipes/" + rcpSeq
         );
 
       setSelectedRecipe(
@@ -135,7 +145,7 @@ export default function Home() {
 
         const response =
   await axios.get(
-          `https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/recipes?keyword=${ingredient}&page=1&size=10&searchType=${searchType}`
+          BASE_URL + "/recipes?keyword=" + ingredient + "&page=1&size=10&searchType=" + searchType
   );
 
         console.log(response.data)
@@ -330,8 +340,9 @@ export default function Home() {
             setOpenDetail(false)
           }
           onStartCooking={(recipe) => {
+            setCookingRecipe(recipe);
 
-            console.log(recipe);
+            setOpenCooking(true);
 
           }}
         />
@@ -349,6 +360,18 @@ export default function Home() {
         />
 
       )}
+
+      {/* 요리 모달 */}
+            {openCooking && (
+      
+              <CookingModal
+                recipe={cookingRecipe}
+                onClose={() =>
+                  setOpenCooking(false)
+                }
+              />
+      
+            )}
 
     </div>
   );

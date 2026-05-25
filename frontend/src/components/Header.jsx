@@ -1,6 +1,7 @@
 // components/Header.jsx
 
 import { useState } from "react";
+import ChatBot from "./ChatBot";
 
 export default function Header({
   
@@ -8,6 +9,9 @@ export default function Header({
 }) {
 
   const [openAlarm, setOpenAlarm] =
+    useState(false);
+
+      const [openChat, setOpenChat] =
     useState(false);
 
 
@@ -55,14 +59,7 @@ export default function Header({
           "
         >
 
-          <img
-            src="/img/profile.png"
-            className="
-              w-10
-              h-10
-              rounded-full
-            "
-          />
+      
 
           <div>
 
@@ -82,6 +79,20 @@ export default function Header({
           </div>
 
         </div>
+
+        <div className="flex items-center gap-4">
+
+        {/* 챗봇 */}
+            <button
+              onClick={() =>
+                setOpenChat(true)
+              }
+              className="
+                text-2xl
+              "
+            >
+              💬
+            </button>
 
         {/* 알림 */}
         <div className="relative">
@@ -242,12 +253,25 @@ export default function Header({
 
                 )}
 
+                
+
               </div>
 
             </div>
 
           )}
+          {/* 챗봇 모달 */}
+      {openChat && (
 
+        <ChatBot
+          onClose={() =>
+            setOpenChat(false)
+          }
+        />
+
+      )}
+
+        </div>
         </div>
 
       </div>
