@@ -10,6 +10,7 @@ import IngredientSelectModal from "../components/IngredientSelectModal";
 import IngredientRecipeModal from "../components/IngredientRecipeModal";
 import RecommendedRecipeCard from "../components/RecommendedRecipeCard";
 import CookingModal from "../components/CookingModal";
+import { useRecommendStore } from "../store/recommendStore";
 
 export default function Home() {
 
@@ -17,10 +18,10 @@ export default function Home() {
     useState(false);
 
   // 추천 레시피
-  const [
-    recommendedRecipes,
-    setRecommendedRecipes
-  ] = useState([]);
+  const {
+  recommendedRecipes,
+  setRecommendedRecipes
+} = useRecommendStore();
 
   // 상세 모달
   const [
@@ -62,6 +63,25 @@ export default function Home() {
     "두부",
   ];
 
+  const ingredients = [
+  {
+    name: "당근",
+    expire_date: "2026-05-26",
+  },
+  {
+    name: "양파",
+    expire_date: "2026-05-27",
+  },
+  {
+    name: "감자",
+    expire_date: "2026-05-29",
+  },
+  {
+    name: "두부",
+    expire_date: "2026-05-25",
+  },
+];
+
   // 요리 모달
     const [openCooking, setOpenCooking] =
       useState(false);
@@ -78,11 +98,13 @@ export default function Home() {
     async () => {
 
       try {
-
-        const response =
-          await axios.get(
-            BASE_URL + "/recipes?page=1&size=10"
-          );
+        console.log(BASE_URL)
+        const response = await axios.post(
+  BASE_URL + "/recommend/list",
+  {
+    ingredients: ingredients
+  }
+);
 
         setRecommendedRecipes(
           response.data.recipes || []

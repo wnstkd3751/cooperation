@@ -17,57 +17,69 @@ export default function ChatBot({
       },
     ]);
 
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   const sendMessage = async () => {
 
-    if (!message.trim()) return;
+  if (!message.trim()) return;
 
-    const userMessage = {
-      role: "user",
-      content: message,
-    };
+  const userMessage = {
+    role: "user",
+    content: message,
+  };
+
+  const updatedMessages = [
+    ...messages,
+    userMessage,
+  ];
+
+  setMessages(updatedMessages);
+
+  const currentMessage = message;
+
+  setMessage("");
+
+  try {
+
+    const res = await axios.post(
+      BASE_URL + "/recommend/chat",
+      {
+        user_message: currentMessage,
+
+        ingredients: [],
+
+        conversation_history:
+          updatedMessages.map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+      }
+    );
 
     setMessages((prev) => [
       ...prev,
-      userMessage,
+      {
+        role: "assistant",
+        content: res.data.answer,
+      },
     ]);
 
-    const currentMessage = message;
+  } catch (e) {
 
-    setMessage("");
+    console.error(e);
 
-    try {
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content:
+          "오류가 발생했습니다 😢",
+      },
+    ]);
 
-      const res = await axios.post(
-        "http://localhost:8000/ai/chat",
-        {
-          message: currentMessage,
-        }
-      );
+  }
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: res.data.answer,
-        },
-      ]);
-
-    } catch (e) {
-
-      console.error(e);
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "오류가 발생했습니다 😢",
-        },
-      ]);
-
-    }
-
-  };
+};
 
   return (
 
