@@ -18,11 +18,12 @@ export default function AddFoodModal({ onClose, onSuccess }) {
 
     const formData = new FormData();
     formData.append("image", imageFile);
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
 
     try {
 
       const res = await axios.post(
-        "https://ideal-giggle-jj675qvvwprw2pp79-8000.app.github.dev/api/ocr/clova",
+        BASE_URL + "/api/ocr/clova",
         formData,
         {
           headers: {
