@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useRecommendStore } from "../store/recommendStore";
 
 export default function ChatBot({
   onClose,
@@ -18,6 +19,12 @@ export default function ChatBot({
     ]);
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+  
+const recommendedRecipes =
+  useRecommendStore(
+    (state) =>
+      state.recommendedRecipes
+  );
 
   const sendMessage = async () => {
 
@@ -48,10 +55,13 @@ export default function ChatBot({
 
         ingredients: [],
 
+        recipes : recommendedRecipes,
+
         conversation_history:
           updatedMessages.map((msg) => ({
             role: msg.role,
             content: msg.content,
+            recipes: recommendedRecipes,
           })),
       }
     );
