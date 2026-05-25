@@ -7,4 +7,8 @@ node_modules/
 dist/
 
 .env
+<<<<<<< HEAD
 dump.rdb
+=======
+dump.rdb
+>>>>>>> 0c0c3d60e9f7239101cf8bdaf00b988b29720489
