@@ -42,6 +42,7 @@ export const getFridgeItems = async (userId) => {
     },
   });
 
+
   console.log("📦 getFridgeItems response:", res);
 
   return res.data;
