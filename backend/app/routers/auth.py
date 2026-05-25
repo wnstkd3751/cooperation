@@ -46,25 +46,25 @@ async def login(user: LoginRequest):
 
     # access token
     access_token =  create_access_token({
-        "sub": str(db_user["_id"])
+        "sub": str(db_user["id"])
     })
 
     # refresh token
     refresh_token = create_refresh_token({
-        "sub": str(db_user["_id"])
+        "sub": str(db_user["id"])
     })
 
     # redis 저장
     redis_client.set(
         refresh_token,
-        str(db_user["_id"]),
+        str(db_user["id"]),
         ex=60 * 60 * 24 * 7
     )
 
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "user_id": str(db_user["_id"])
+        "user_id": str(db_user["id"])
     }
 
 @router.post("/refresh")
