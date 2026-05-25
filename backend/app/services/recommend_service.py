@@ -31,7 +31,7 @@ def calculate_score(recipe, weight_map):
 
 async def recommend(ingredients):
     # DB에서 레시피 가져오기
-    recipes = await recipe_collection.find({}).to_list(100)
+    recipes = await recipe_collection.find({}).to_list(None)
 
     # 가중치 계산
     weighted = decay.get_expiry_weights(ingredients)
@@ -47,5 +47,9 @@ async def recommend(ingredients):
 
     # 점수 높은 순 정렬
     recipes.sort(key=lambda x: x["score"], reverse=True)
+    
+    # _id를 문자열로 변환 (JSON 직렬화 오류 방지)
+    for recipe in recipes:
+        recipe["_id"] = str(recipe["_id"])
 
     return recipes
