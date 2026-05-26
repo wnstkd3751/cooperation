@@ -23,13 +23,16 @@ class RecommendRequest(BaseModel):
 async def chat(request: ChatRequest):
     print(request)
 
-    answer = await llm_service.chat(
+    result = await llm_service.chat(
         request.user_message,
         request.user_id,
         request.recipes,
         request.conversation_history
     )
-    return {"answer": answer}
+    return {
+        "answer": result["answer"],
+        "recommended_recipes": result["recommended_recipes"]
+    }
 
 
 @router.post("/list")

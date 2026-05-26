@@ -39,4 +39,7 @@ async def chat(user_message, user_id, recipes, conversation_history=[]):
         messages=messages
     )
 
-    return response.content[0].text
+    return {
+        "answer": response.content[0].text,
+        "recommended_recipes": recipes[:3]
+    }
