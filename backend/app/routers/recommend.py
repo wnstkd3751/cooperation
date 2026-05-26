@@ -10,7 +10,8 @@ router = APIRouter(prefix="/recommend", tags=["recommend"])
 
 class ChatRequest(BaseModel):
     user_message: str
-    ingredients: list
+    user_id: str
+    recipes: list
     conversation_history: list = []
 
 
@@ -24,9 +25,9 @@ async def chat(request: ChatRequest):
 
     answer = await llm_service.chat(
         request.user_message,
-        request.ingredients,
-        request.conversation_history,
-        request.recipes
+        request.user_id,
+        request.recipes,
+        request.conversation_history
     )
     return {"answer": answer}
 
