@@ -26,6 +26,9 @@ const recommendedRecipes =
       state.recommendedRecipes
   );
 
+  console.log("recipes:", recommendedRecipes);
+  console.log("length:", recommendedRecipes.length);
+
   const sendMessage = async () => {
 
   if (!message.trim()) return;
@@ -44,6 +47,8 @@ const recommendedRecipes =
 
   const currentMessage = message;
 
+  const userId = localStorage.getItem("user_id");
+
   setMessage("");
 
   try {
@@ -53,7 +58,7 @@ const recommendedRecipes =
       {
         user_message: currentMessage,
 
-        ingredients: [],
+        user_id: userId,
 
         recipes : recommendedRecipes,
 
@@ -61,7 +66,6 @@ const recommendedRecipes =
           updatedMessages.map((msg) => ({
             role: msg.role,
             content: msg.content,
-            recipes: recommendedRecipes,
           })),
       }
     );
