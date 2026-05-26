@@ -119,7 +119,7 @@ export default function RecipeDetailModal({
 
 </div>
 
-        <div className="p-6">
+        <div className="p-6 text-black">
 
           {/* 정보 카드 */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 ">

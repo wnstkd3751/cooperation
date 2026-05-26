@@ -1,99 +1,133 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useRecommendStore } from "../store/recommendStore";
+
+import { useRecommendStore }
+from "../store/recommendStore";
+
+import RecipeDetailModal
+from "./RecipeDetailModal";
+
+import RecipeCard
+from "./RecipeCard";
+
+import { useChatStore }
+from "../store/chatStore";
 
 export default function ChatBot({
   onClose,
 }) {
 
+  const [selectedRecipe, setSelectedRecipe] =
+    useState(null);
+
   const [message, setMessage] =
     useState("");
 
-  const [messages, setMessages] =
-    useState([
-      {
-        role: "assistant",
-        content:
-          "안녕하세요? 무엇을 도와드릴까요?",
-      },
-    ]);
-
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
-  
-const recommendedRecipes =
-  useRecommendStore(
-    (state) =>
-      state.recommendedRecipes
+  const messages =
+  useChatStore(
+    (state) => state.messages
   );
 
-  console.log("recipes:", recommendedRecipes);
-  console.log("length:", recommendedRecipes.length);
+const setMessages =
+  useChatStore(
+    (state) => state.setMessages
+  );
+
+const addMessage =
+  useChatStore(
+    (state) => state.addMessage
+  );
+
+  const scrollRef = useRef(null);
+
+  const BASE_URL =
+    import.meta.env.VITE_BASE_URL;
+
+  const recommendedRecipes =
+    useRecommendStore(
+      (state) =>
+        state.recommendedRecipes
+    );
+
+  useEffect(() => {
+
+    if (scrollRef.current) {
+
+      scrollRef.current.scrollTop =
+        scrollRef.current.scrollHeight;
+
+    }
+
+  }, [messages]);
 
   const sendMessage = async () => {
 
-  if (!message.trim()) return;
+    if (!message.trim()) return;
 
-  const userMessage = {
-    role: "user",
-    content: message,
+    const userMessage = {
+      role: "user",
+      content: message,
+    };
+
+    const updatedMessages = [
+      ...messages,
+      userMessage,
+    ];
+
+    addMessage(userMessage);
+
+    const currentMessage = message;
+
+    const userId =
+      localStorage.getItem("user_id");
+
+    setMessage("");
+
+    try {
+
+      const res = await axios.post(
+        BASE_URL + "/recommend/chat",
+        {
+          user_message:
+            currentMessage,
+
+          user_id: userId,
+
+          recipes:
+            recommendedRecipes,
+
+          conversation_history:
+            updatedMessages.map(
+              (msg) => ({
+                role: msg.role,
+                content: msg.content,
+              })
+            ),
+        }
+      );
+
+      addMessage({
+  role: "assistant",
+  content:
+    res.data.answer,
+  recipes:
+    res.data
+      .recommended_recipes || [],
+});
+
+    } catch (e) {
+
+      console.error(e);
+
+      addMessage({
+  role: "assistant",
+  content:
+    "오류가 발생했습니다 😢",
+});
+
+    }
+
   };
-
-  const updatedMessages = [
-    ...messages,
-    userMessage,
-  ];
-
-  setMessages(updatedMessages);
-
-  const currentMessage = message;
-
-  const userId = localStorage.getItem("user_id");
-
-  setMessage("");
-
-  try {
-
-    const res = await axios.post(
-      BASE_URL + "/recommend/chat",
-      {
-        user_message: currentMessage,
-
-        user_id: userId,
-
-        recipes : recommendedRecipes,
-
-        conversation_history:
-          updatedMessages.map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-          })),
-      }
-    );
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content: res.data.answer,
-      },
-    ]);
-
-  } catch (e) {
-
-    console.error(e);
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content:
-          "오류가 발생했습니다 😢",
-      },
-    ]);
-
-  }
-
-};
 
   return (
 
@@ -105,45 +139,61 @@ const recommendedRecipes =
         flex
         items-center
         justify-center
-        bg-black/40
+        bg-black/50
+        backdrop-blur-sm
       "
     >
 
       <div
         className="
-          w-[90%]
-          max-w-md
-          h-[600px]
+          w-[95%]
+          max-w-2xl
+          h-[90vh]
           bg-white
-          rounded-3xl
+          rounded-[32px]
+          overflow-hidden
           shadow-2xl
           flex
           flex-col
-          overflow-hidden
-          text-black
         "
       >
 
+        {/* 헤더 */}
         <div
           className="
-            p-4
-            border-b
+            bg-gradient-to-r
+            from-orange-400
+            to-red-400
+            px-6
+            py-5
+            text-white
             flex
-            justify-between
             items-center
-            
+            justify-between
           "
         >
 
-          <div className="font-bold text-lg">
-            AI 요리 도우미
+          <div>
+
+            <h2 className="text-2xl font-bold">
+              AI 요리 도우미
+            </h2>
+
+            <p className="text-sm text-white/80 mt-1">
+              냉장고 재료 기반 레시피 추천
+            </p>
+
           </div>
 
           <button
             onClick={onClose}
             className="
-              text-gray-400
-              hover:text-black
+              w-10
+              h-10
+              rounded-full
+              bg-white/20
+              hover:bg-white/30
+              transition
               text-xl
             "
           >
@@ -152,102 +202,230 @@ const recommendedRecipes =
 
         </div>
 
-        {/* 메시지 */}
+        {/* 채팅 영역 */}
         <div
+          ref={scrollRef}
           className="
             flex-1
             overflow-y-auto
-            p-4
-            bg-gray-50
+            px-5
+            py-6
+            bg-gradient-to-b
+            from-orange-50
+            to-white
+            space-y-6
           "
         >
 
-          {messages.map((msg, idx) => (
+          {messages.map((msg, idx) => {
 
-            <div
-              key={idx}
-              className={`
-                mb-3
-                flex
-                ${
-                  msg.role === "user"
-                    ? "justify-end"
-                    : "justify-start"
-                }
-              `}
-            >
+            const contentParts =
+              msg.content
+                .split("---")
+                .filter(Boolean);
+
+            return (
 
               <div
+                key={idx}
                 className={`
-                  px-4
-                  py-3
-                  rounded-2xl
-                  max-w-[80%]
-                  whitespace-pre-wrap
+                  flex
+                  flex-col
+                  gap-4
                   ${
                     msg.role === "user"
-                      ? "bg-red-400 text-white"
-                      : "bg-gray-300 border"
+                      ? "items-end"
+                      : "items-start"
                   }
                 `}
               >
-                {msg.content}
+
+                {contentParts.map(
+                  (part, partIdx) => {
+
+                    const recipe =
+  partIdx > 0
+    ? msg.recipes?.[
+        partIdx - 1
+      ]
+    : null;
+
+                    return (
+
+                      <div
+                        key={partIdx}
+                        className="w-full"
+                      >
+
+                        {/* 메시지 */}
+                        <div
+                          className={`
+                            px-5
+                            py-4
+                            rounded-3xl
+                            whitespace-pre-wrap
+                            leading-relaxed
+                            shadow-sm
+                            ${
+                              msg.role === "user"
+                                ? `
+                                  bg-gradient-to-r
+                                  from-red-400
+                                  to-orange-400
+                                  text-white
+                                  ml-auto
+                                  max-w-[75%]
+                                `
+                                : `
+                                  bg-white
+                                  border
+                                  border-orange-100
+                                  text-black
+                                  max-w-[85%]
+                                `
+                            }
+                          `}
+                        >
+                          {part.trim()}
+                        </div>
+
+                        {/* 레시피 카드 */}
+                        {msg.role ===
+                          "assistant" &&
+                          recipe && (
+
+                          <div
+                            className="
+                              mt-4
+                              w-full
+                              text-black
+                              max-w-[85%]
+                            "
+                          >
+
+                            <RecipeCard
+                              recipe={recipe}
+                              onClick={() => {
+
+                                setSelectedRecipe(
+                                  recipe
+                                );
+
+                              }}
+                            />
+
+                          </div>
+
+                        )}
+
+                      </div>
+
+                    );
+
+                  }
+                )}
+
               </div>
 
-            </div>
+            );
 
-          ))}
+          })}
 
         </div>
 
         {/* 입력창 */}
         <div
           className="
-            p-3
+            p-4
             border-t
-            flex
-            gap-2
+            bg-white
           "
         >
 
-          <input
-            value={message}
-            onChange={(e) =>
-              setMessage(e.target.value)
-            }
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                sendMessage();
-              }
-            }}
-            placeholder="질문을 입력하세요"
+          <div
             className="
-              flex-1
-              border
-              rounded-xl
-              px-4
-              py-2
-              outline-none
-            "
-          />
-
-          <button
-            onClick={sendMessage}
-            className="
-              bg-red-400
-              text-white
-              px-5
-              rounded-xl
+              flex
+              items-center
+              gap-3
+              bg-gray-100
+              rounded-2xl
+              p-2
             "
           >
-            전송
-          </button>
+
+            <input
+              value={message}
+              onChange={(e) =>
+                setMessage(e.target.value)
+              }
+              onKeyDown={(e) => {
+
+                if (
+                  e.key === "Enter"
+                ) {
+                  sendMessage();
+                }
+
+              }}
+              placeholder="예: 김치로 만들 수 있는 요리 추천해줘"
+              className="
+                flex-1
+                bg-transparent
+                outline-none
+                px-3
+                py-2
+                text-black
+              "
+            />
+
+            <button
+              onClick={sendMessage}
+              className="
+                bg-gradient-to-r
+                from-orange-400
+                to-red-400
+                text-white
+                px-5
+                py-3
+                rounded-xl
+                font-semibold
+                hover:scale-105
+                transition
+              "
+            >
+              전송
+            </button>
+
+          </div>
 
         </div>
 
       </div>
 
+      {/* 상세 모달 */}
+      {selectedRecipe && (
+
+        <RecipeDetailModal
+          recipe={selectedRecipe}
+          onClose={() =>
+            setSelectedRecipe(null)
+          }
+          onStartCooking={(
+            recipe
+          ) => {
+
+            console.log(
+              "요리 시작:",
+              recipe
+            );
+
+          }}
+        />
+
+      )}
+
     </div>
 
   );
+
 }
