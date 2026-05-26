@@ -10,7 +10,7 @@ class FeedbackRequest(BaseModel):
     recipe_id: str
     recipe_name: str
     action: str          # click / save / complete / rating
-    rating: float = None # rating일 때만 1~5
+    rating: float | None = None # rating일 때만 1~5
 
 @router.post("/")
 async def save_feedback(request: FeedbackRequest):
