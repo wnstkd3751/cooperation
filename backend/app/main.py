@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import fridge, auth, recipe, ocr, recommend
+from app.routers import fridge, auth, recipe, ocr, recommend, feedback
 
 
 app = FastAPI()
@@ -23,3 +23,4 @@ app.include_router(auth.router)
 app.include_router(recipe.router)
 app.include_router(ocr.router)
 app.include_router(recommend.router)
+app.include_router(feedback.router)
