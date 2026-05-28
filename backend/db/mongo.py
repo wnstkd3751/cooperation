@@ -24,4 +24,4 @@ fridge_collection = db["fridge_items"]
 
 recipe_collection = db["recipes"]
 
-ingredients_collection = db["ingredients"]
+ingredients_collection = db["ingredient"]
