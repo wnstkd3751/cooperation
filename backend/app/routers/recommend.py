@@ -17,6 +17,17 @@ class ChatRequest(BaseModel):
 
 class RecommendRequest(BaseModel):
     ingredients: list
+    age_group: str = None  # 추가
+
+@router.post("/list")
+async def recommend_list(request: RecommendRequest):
+    recipes = await recommend_service.recommend(
+        request.ingredients,
+        request.age_group  # 추가
+    )
+    return {
+        "recipes": convert_objectid(recipes[:30])
+    }
 
 
 @router.post("/chat")
