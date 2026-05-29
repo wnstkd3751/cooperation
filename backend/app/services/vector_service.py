@@ -5,7 +5,7 @@ from db.mongo import (
 )
 
 from app.services.embedding_service import (
-    create_embedding
+    create_embeddings
 )
 
 def cosine_similarity(a, b):
@@ -23,7 +23,7 @@ def find_top_candidates(
     top_k=5
 ):
 
-    target_embedding = create_embedding(
+    target_embedding = create_embeddings(
         item_name
     )
 

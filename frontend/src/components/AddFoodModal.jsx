@@ -23,7 +23,7 @@ export default function AddFoodModal({ onClose, onSuccess }) {
     try {
 
       const res = await axios.post(
-        BASE_URL + "/api/ocr/clova",
+        BASE_URL + "/api/ocr/receipt",
         formData,
         {
           headers: {

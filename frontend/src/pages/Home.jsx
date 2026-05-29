@@ -10,7 +10,12 @@ import IngredientSelectModal from "../components/IngredientSelectModal";
 import IngredientRecipeModal from "../components/IngredientRecipeModal";
 import RecommendedRecipeCard from "../components/RecommendedRecipeCard";
 import CookingModal from "../components/CookingModal";
+
 import { useRecommendStore } from "../store/recommendStore";
+
+import {
+  getExpiringFoods
+} from "../api/fridgeApi";
 
 export default function Home() {
 
@@ -19,9 +24,9 @@ export default function Home() {
 
   // 추천 레시피
   const {
-  recommendedRecipes,
-  setRecommendedRecipes
-} = useRecommendStore();
+    recommendedRecipes,
+    setRecommendedRecipes
+  } = useRecommendStore();
 
   // 상세 모달
   const [
@@ -55,41 +60,33 @@ export default function Home() {
     setSelectedIngredient
   ] = useState("");
 
-  // 임박 재료 목록
-  const expiringIngredients = [
-    "당근",
-    "양파",
-    "감자",
-    "두부",
-  ];
+  // =========================
+  // 임박 재료 상태
+  // =========================
+  const [
+    expiringIngredients,
+    setExpiringIngredients
+  ] = useState([]);
 
-  const ingredients = [
-  {
-    name: "당근",
-    expire_date: "2026-05-26",
-  },
-  {
-    name: "양파",
-    expire_date: "2026-05-27",
-  },
-  {
-    name: "감자",
-    expire_date: "2026-05-29",
-  },
-  {
-    name: "두부",
-    expire_date: "2026-05-25",
-  },
-];
+  const [
+    expireSummary,
+    setExpireSummary
+  ] = useState("");
+
+  const [
+    expireMessage,
+    setExpireMessage
+  ] = useState("");
 
   // 요리 모달
-    const [openCooking, setOpenCooking] =
-      useState(false);
-  
-    const [cookingRecipe, setCookingRecipe] =
-      useState(null);
+  const [openCooking, setOpenCooking] =
+    useState(false);
 
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const [cookingRecipe, setCookingRecipe] =
+    useState(null);
+
+  const BASE_URL =
+    import.meta.env.VITE_BASE_URL;
 
   // =========================
   // 추천 레시피 조회
@@ -98,13 +95,18 @@ export default function Home() {
     async () => {
 
       try {
-        console.log(BASE_URL)
-        const response = await axios.post(
-  BASE_URL + "/recommend/list",
-  {
-    ingredients: ingredients
-  }
-);
+
+        console.log(BASE_URL);
+
+        const response =
+          await axios.post(
+            BASE_URL +
+            "/recommend/list",
+            {
+              ingredients:
+                expiringIngredients
+            }
+          );
 
         setRecommendedRecipes(
           response.data.recipes || []
@@ -114,6 +116,44 @@ export default function Home() {
 
         console.error(
           "추천 레시피 조회 실패",
+          error
+        );
+
+      }
+    };
+
+  // =========================
+  // 유통기한 임박 재료 조회
+  // =========================
+  const fetchExpiringFoods =
+    async () => {
+
+      try {
+
+        const response =
+          await getExpiringFoods();
+
+        console.log(
+          "임박 재료:",
+          response
+        );
+
+        setExpireSummary(
+          response.summary || ""
+        );
+
+        setExpireMessage(
+          response.message || ""
+        );
+
+        setExpiringIngredients(
+          response.items || []
+        );
+
+      } catch (error) {
+
+        console.error(
+          "임박 재료 조회 실패",
           error
         );
 
@@ -163,14 +203,19 @@ export default function Home() {
           ingredient
         );
 
-        const searchType = "ingredient";
+        const searchType =
+          "ingredient";
 
         const response =
-  await axios.get(
-          BASE_URL + "/recipes?keyword=" + ingredient + "&page=1&size=10&searchType=" + searchType
-  );
+          await axios.get(
+            BASE_URL +
+            "/recipes?keyword=" +
+            ingredient +
+            "&page=1&size=10&searchType=" +
+            searchType
+          );
 
-        console.log(response.data)
+        console.log(response.data);
 
         setIngredientRecipes(
           response.data.recipes || []
@@ -199,6 +244,8 @@ export default function Home() {
   // =========================
   useEffect(() => {
 
+    fetchExpiringFoods();
+
     fetchRecommendedRecipes();
 
   }, []);
@@ -209,14 +256,14 @@ export default function Home() {
 
       {/* 헤더 */}
       <Header
-  onOpenExpire={() =>
-    setOpenExpire(true)
-  }
+        onOpenExpire={() =>
+          setOpenExpire(true)
+        }
 
-  onIngredientClick={
-    fetchIngredientRecipes
-  }
-/>
+        onIngredientClick={
+          fetchIngredientRecipes
+        }
+      />
 
       <div className="p-5 pb-28">
 
@@ -238,11 +285,16 @@ export default function Home() {
           <div>
 
             <div className="font-bold text-lg">
-              당근 외 3개
+
+              {expireSummary ||
+                "임박 재료 없음"}
+
             </div>
 
             <div className="text-sm text-gray-500">
-              유통기한 3일 이내!
+
+              {expireMessage}
+
             </div>
 
           </div>
@@ -265,12 +317,76 @@ export default function Home() {
         <div className="mb-10">
 
           <h2 className="text-2xl font-bold mb-4">
+
             ⚠️ 곧 상할 재료
+
           </h2>
 
-          <div className="text-gray-400">
-            임박한 재료가 없습니다 👍
-          </div>
+          {expiringIngredients.length === 0 ? (
+
+            <div className="text-gray-400">
+
+              임박한 재료가 없습니다 👍
+
+            </div>
+
+          ) : (
+
+            <div className="space-y-3">
+
+              {expiringIngredients.map(
+                (item, index) => (
+
+                  <div
+                    key={index}
+                    className="
+                      bg-white
+                      rounded-2xl
+                      p-4
+                      border
+                      flex
+                      justify-between
+                      items-center
+                    "
+                  >
+
+                    <div>
+
+                      <div className="font-semibold">
+
+                        {item.name}
+
+                      </div>
+
+                      <div className="text-sm text-gray-500">
+
+                        유통기한:
+                        {" "}
+                        {item.expire_date}
+
+                      </div>
+
+                    </div>
+
+                    <div
+                      className="
+                        text-red-400
+                        font-bold
+                      "
+                    >
+
+                      D-{item.remain_days}
+
+                    </div>
+
+                  </div>
+
+                )
+              )}
+
+            </div>
+
+          )}
 
         </div>
 
@@ -288,7 +404,9 @@ export default function Home() {
           >
 
             <h2 className="text-2xl font-bold">
+
               🍳 추천 레시피
+
             </h2>
 
           </div>
@@ -310,9 +428,11 @@ export default function Home() {
                 key={recipe.rcpSeq}
                 recipe={recipe}
                 onClick={() => {
+
                   fetchRecipeDetail(
                     recipe.rcpSeq
                   );
+
                 }}
               />
 
@@ -327,11 +447,17 @@ export default function Home() {
       {/* 재료 선택 모달 */}
       <IngredientSelectModal
         open={openIngredientModal}
-        ingredients={expiringIngredients}
+        ingredients={
+          expiringIngredients.map(
+            (item) => item.name
+          )
+        }
         onClose={() =>
           setOpenIngredientModal(false)
         }
-        onSelect={fetchIngredientRecipes}
+        onSelect={
+          fetchIngredientRecipes
+        }
       />
 
       {/* 재료 추천 모달 */}
@@ -362,6 +488,7 @@ export default function Home() {
             setOpenDetail(false)
           }
           onStartCooking={(recipe) => {
+
             setCookingRecipe(recipe);
 
             setOpenCooking(true);
@@ -384,16 +511,16 @@ export default function Home() {
       )}
 
       {/* 요리 모달 */}
-            {openCooking && (
-      
-              <CookingModal
-                recipe={cookingRecipe}
-                onClose={() =>
-                  setOpenCooking(false)
-                }
-              />
-      
-            )}
+      {openCooking && (
+
+        <CookingModal
+          recipe={cookingRecipe}
+          onClose={() =>
+            setOpenCooking(false)
+          }
+        />
+
+      )}
 
     </div>
   );
