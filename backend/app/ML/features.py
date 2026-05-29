@@ -1,4 +1,5 @@
 import app.utils.decay as decay
+from db.mongo import db
 
 # 카테고리 → 숫자 매핑
 CATEGORY_MAP = {
@@ -8,14 +9,30 @@ CATEGORY_MAP = {
     "기타":   0.3,
 }
 
-def extract_features(ingredient):
-    # ingredient = {"name": "계란", "days_left": 1, "category": "단백질"}
+async def get_age_weight(age_group: str, category: str) -> float:
+    if not age_group:
+        return 1.0
 
-    # 1. 유통기한 가중치
+    collection = db["age_group_preference"]
+    doc = await collection.find_one({
+        "age_group": age_group,
+        "food_category": category
+    })
+
+    if doc:
+        return doc["weight"]
+    return 1.0
+
+
+async def extract_features(ingredient, age_group=None):
+    # 유통기한 가중치
     expiry = decay.calculate_expiry_weight_from_date(ingredient["expire_date"])
 
-    # 2. 카테고리 점수 (없는 카테고리면 0.3)
+    # 카테고리 점수
     category = CATEGORY_MAP.get(ingredient["category"], 0.3)
 
-    # 3. 숫자 벡터로 반환
-    return [expiry, category]
+    # 연령대 가중치 (DB 조회)
+    age_weight = await get_age_weight(age_group, ingredient.get("category", "기타"))
+
+    # 숫자 벡터로 반환
+    return [expiry, category, age_weight]
