@@ -1,8 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from bson import ObjectId
 import app.services.llm_service as llm_service
 import app.services.recommend_service as recommend_service
+from app.utils.deps import get_current_user
 
 
 router = APIRouter(prefix="/recommend", tags=["recommend"])
@@ -10,7 +11,6 @@ router = APIRouter(prefix="/recommend", tags=["recommend"])
 
 class ChatRequest(BaseModel):
     user_message: str
-    user_id: str
     recipes: list
     conversation_history: list = []
 
@@ -23,7 +23,7 @@ class RecommendRequest(BaseModel):
 async def recommend_list(request: RecommendRequest):
     recipes = await recommend_service.recommend(
         request.ingredients,
-        request.age_group  # 추가
+        request.age_group
     )
     return {
         "recipes": convert_objectid(recipes[:30])
@@ -31,12 +31,12 @@ async def recommend_list(request: RecommendRequest):
 
 
 @router.post("/chat")
-async def chat(request: ChatRequest):
+async def chat(request: ChatRequest, user=Depends(get_current_user)):
     print(request)
 
     result = await llm_service.chat(
         request.user_message,
-        request.user_id,
+        user["sub"],
         request.recipes,
         request.conversation_history
     )
@@ -45,16 +45,6 @@ async def chat(request: ChatRequest):
         "recommended_recipes": result["recommended_recipes"]
     }
 
-
-@router.post("/list")
-async def recommend_list(request: RecommendRequest):
-    recipes = await recommend_service.recommend(request.ingredients)
-
-    return {
-        "recipes": convert_objectid(
-            recipes[:30]
-        )
-    }
 
 
 
