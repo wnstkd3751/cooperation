@@ -4,18 +4,12 @@ from fastapi import (
     File
 )
 
-import json
-
 from app.services.openai_service import (
     extract_receipt_items
 )
 
 from app.services.vector_service import (
     find_top_candidates
-)
-
-from app.services.normalize_service import (
-    gpt_normalize
 )
 
 router = APIRouter()
@@ -39,14 +33,8 @@ async def receipt_ocr(
             item["name"]
         )
 
-        normalized = gpt_normalize(
-            item["name"],
-            candidates
-        )
-
-        normalized_data = json.loads(
-            normalized
-        )
+        # 가장 유사한 재료
+        best_match = candidates[0]
 
         results.append({
 
@@ -54,9 +42,10 @@ async def receipt_ocr(
                 item["name"],
 
             "matched_name":
-                normalized_data[
-                    "normalized_name"
-                ],
+                best_match["name"],
+
+            "score":
+                best_match["score"],
 
             "quantity":
                 item.get(

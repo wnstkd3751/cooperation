@@ -34,3 +34,43 @@ async def get_items(
 async def remove_item(item_id: str):
     await fridge_service.delete_item(item_id)
     return {"message": "삭제 완료"}
+
+@router.get("/expiring")
+async def expiring_foods(
+    user=Depends(get_current_user)
+):
+    print(user)
+    items = await fridge_service.get_expiring_items(
+        user_id=user,
+        days=3
+    )
+
+    if len(items) == 0:
+
+        return {
+            "summary":
+                "임박한 재료가 없습니다",
+
+            "items": []
+        }
+
+    first = items[0]["name"]
+
+    summary = first
+
+    if len(items) > 1:
+
+        summary += (
+            f" 외 {len(items)-1}개"
+        )
+
+    return {
+        "summary":
+            summary,
+
+        "message":
+            "유통기한 3일 이내!",
+
+        "items":
+            items
+    }

@@ -66,3 +66,4 @@ async def get_recipe_detail_api(rcp_seq: str):
     return await recipe_service.get_recipe_detail(
         rcp_seq
     )
+
