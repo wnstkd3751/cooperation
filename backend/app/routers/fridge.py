@@ -41,7 +41,7 @@ async def expiring_foods(
 ):
     print(user)
     items = await fridge_service.get_expiring_items(
-        user_id=user,
+        user_id=user["sub"],
         days=3
     )
 
