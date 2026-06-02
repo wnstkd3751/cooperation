@@ -12,9 +12,9 @@ from app.services.vector_service import (
     find_top_candidates
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/ocr", tags=["ocr"])
 
-@router.post("/ocr/receipt")
+@router.post("/receipt")
 async def receipt_ocr(
     image: UploadFile = File(...)
 ):
@@ -29,7 +29,7 @@ async def receipt_ocr(
 
     for item in ocr_result["items"]:
 
-        candidates = find_top_candidates(
+        candidates = await find_top_candidates(
             item["name"]
         )
 

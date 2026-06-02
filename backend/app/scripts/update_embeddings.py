@@ -1,22 +1,37 @@
 import asyncio
 
-from db.mongo import (
-    ingredients_collection
-)
+from pymongo import MongoClient
+from openai import OpenAI
 
-from app.services.embedding_service import (
-    create_embeddings
-)
+import os
+
+client = MongoClient(os.getenv("MONGO_URL"))
+db = client["demo"]
+ingredients_collection = db["ingredient"]
 
 BATCH_SIZE = 100
 
+client = OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")
+)
+
+def create_embeddings(texts):
+
+    response = client.embeddings.create(
+        model="text-embedding-3-small",
+        input=texts
+    )
+
+    return [
+        item.embedding
+        for item in response.data
+    ]
+
 async def update_embeddings():
 
-    ingredients = []
-
-    async for item in ingredients_collection.find():
-
-        ingredients.append(item)
+    ingredients = list(
+    ingredients_collection.find({})
+)
 
     print("전체 개수:", len(ingredients))
 
@@ -49,16 +64,16 @@ async def update_embeddings():
             embeddings
         ):
 
-            await ingredients_collection.update_one(
-                {
-                    "_id": item["_id"]
-                },
-                {
-                    "$set": {
-                        "embedding": embedding
-                    }
+            ingredients_collection.update_one(
+            {
+                "_id": item["_id"]
+            },
+            {
+                "$set": {
+                    "embedding": embedding
                 }
-            )
+            }
+        )
 
     print("완료")
 
