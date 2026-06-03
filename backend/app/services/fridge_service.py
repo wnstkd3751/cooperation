@@ -67,7 +67,7 @@ async def get_expiring_items(
     print(user_id)
 
     async for item in fridge_collection.find({
-        "user_id": user_id['sub']
+        "user_id": user_id
     }):
     
         print(item)
