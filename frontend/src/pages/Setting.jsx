@@ -9,7 +9,7 @@ export default function Setting() {
   const [openExpire, setOpenExpire] = useState(false);
   const { logout } = useAuthStore();
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("user_id");
 
   const handleLogout = () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
@@ -35,9 +35,8 @@ export default function Setting() {
 
       {/* 프로필 */}
       <div className="flex items-center gap-4 mb-6">
-        <div className="w-14 h-14 bg-gray-300 rounded-full" />
         <div>
-          <p className="font-semibold">{userId}</p>
+          <p className="font-semibold">{userId} 님의 설정 페이지</p>
         </div>
       </div>
 

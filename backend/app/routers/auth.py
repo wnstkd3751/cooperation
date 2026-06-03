@@ -6,6 +6,7 @@ from app.utils.jwt import (
     decode_token
 )
 from upstash_redis import Redis
+#from db.redis import redis_client
 import os
 from app.schemas.auth import SignupRequest, LoginRequest
 

@@ -14,7 +14,7 @@ export default function Header({
   const [openChat, setOpenChat] =
     useState(false);
   
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("user_id");
 
   return (
 
@@ -60,7 +60,7 @@ export default function Header({
             </p>
 
             <p className="font-semibold">
-              {userId}
+              {userId} 님
             </p>
 
           </div>
