@@ -4,6 +4,7 @@ from pydantic import BaseModel
 class FridgeItemCreate(BaseModel):
     user_id: str
     food_id: str
+    ocr_name: str
     name: str
     quantity: int
     category: str

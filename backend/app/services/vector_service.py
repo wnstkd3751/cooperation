@@ -72,13 +72,30 @@ async def find_top_candidates(
 
             scores.append({
 
-                "name":
-                    ingredient["name"],
+    "name":
+        ingredient["name"],
 
-                "score":
-                    score
+    "score":
+        score,
 
-            })
+    "category":
+        ingredient.get(
+            "category",
+            "기타"
+        ),
+
+    "image":
+        ingredient.get(
+            "image",
+            ""
+        ),
+
+    "shelf_life_days":
+        ingredient.get(
+            "shelf_life_days",
+            7
+        )
+})
 
         except Exception as e:
 
