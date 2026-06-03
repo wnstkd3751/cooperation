@@ -7,6 +7,9 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Fridge from "./pages/Fridge";
 import ProtectedRoute from "./routes/ProctectRoute";
+import MySetting from "./components/MySetting";
+import NotificationSetting from "./components/NotificationSetting";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 
 function Layout() {
 
@@ -60,6 +63,33 @@ function Layout() {
                 <Setting />
               </ProtectedRoute>
             }
+          />
+
+          <Route 
+          path="/setting/my" 
+          element={
+              <ProtectedRoute>
+                <MySetting />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+          path="/setting/notification" 
+          element={
+              <ProtectedRoute>
+                <NotificationSetting />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+          path="/setting/privacy"
+          element={
+              <ProtectedRoute>
+                <PrivacyPolicy />
+              </ProtectedRoute>
+            } 
           />
 
         </Routes>

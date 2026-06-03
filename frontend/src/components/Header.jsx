@@ -11,9 +11,10 @@ export default function Header({
   const [openAlarm, setOpenAlarm] =
     useState(false);
 
-      const [openChat, setOpenChat] =
+  const [openChat, setOpenChat] =
     useState(false);
-
+  
+  const userId = localStorage.getItem("userId");
 
   return (
 
@@ -59,7 +60,7 @@ export default function Header({
             </p>
 
             <p className="font-semibold">
-              사용자님
+              {userId}
             </p>
 
           </div>
