@@ -4,6 +4,8 @@ from fastapi import (
     File
 )
 
+from datetime import datetime, timedelta
+
 from app.services.openai_service import (
     extract_receipt_items
 )
@@ -25,7 +27,11 @@ async def receipt_ocr(
         image_bytes
     )
 
+    print(ocr_result)
+
     results = []
+
+    today = datetime.now()
 
     for item in ocr_result["items"]:
 
@@ -33,15 +39,26 @@ async def receipt_ocr(
             item["name"]
         )
 
-        # 가장 유사한 재료
+        if not candidates:
+            continue
+
         best_match = candidates[0]
+
+        expire_date = (
+            today +
+            timedelta(
+                days=best_match[
+                    "shelf_life_days"
+                ]
+            )
+        )
 
         results.append({
 
             "ocr_name":
                 item["name"],
 
-            "matched_name":
+            "name":
                 best_match["name"],
 
             "score":
@@ -54,10 +71,25 @@ async def receipt_ocr(
                 ),
 
             "category":
-                item.get(
-                    "category",
-                    "기타"
+                best_match["category"],
+
+            "image":
+                best_match["image"],
+
+            "purchase_date":
+                today.strftime(
+                    "%Y-%m-%d"
                 ),
+
+            "expire_date":
+                expire_date.strftime(
+                    "%Y-%m-%d"
+                ),
+
+            "shelf_life_days":
+                best_match[
+                    "shelf_life_days"
+                ],
 
             "candidates":
                 candidates

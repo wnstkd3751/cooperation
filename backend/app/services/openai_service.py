@@ -25,32 +25,19 @@ def extract_receipt_items(image_bytes):
             {
                 "role": "system",
                 "content": """
-                영수증에서 식재료만 추출해라.
+영수증에서 식재료만 추출해라.
 
-                반드시 JSON으로 반환:
+반드시 JSON으로 반환:
 
-                {
-                  "items": [
-                    {
-                      "name": "",
-                      "quantity": 1,
-                      "category": ""
-                    }
-                  ]
-                }
-
-                category는 반드시 아래 중 하나:
-
-                채소
-                과일
-                육류
-                수산물
-                유제품
-                가공식품
-                음료
-                조미료
-                기타
-                """
+{
+  "items": [
+    {
+      "name": "",
+      "quantity": 1
+    }
+  ]
+}
+"""
             },
 
             {
@@ -65,8 +52,7 @@ def extract_receipt_items(image_bytes):
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url":
-                            f"data:image/jpeg;base64,{base64_image}"
+                            "url": f"data:image/jpeg;base64,{base64_image}"
                         }
                     }
                 ]

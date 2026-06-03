@@ -39,11 +39,11 @@ async def remove_item(item_id: str):
 async def expiring_foods(
     user=Depends(get_current_user)
 ):
-    print(user)
     items = await fridge_service.get_expiring_items(
         user_id=user["sub"],
         days=3
     )
+
 
     if len(items) == 0:
 

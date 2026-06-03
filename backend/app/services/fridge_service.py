@@ -11,6 +11,8 @@ async def create_item(item, user_id: str):
 
     data = item.dict()
 
+    print(data)
+
     data["user_id"] = user_id
 
     result = await fridge_collection.insert_one(
@@ -62,8 +64,10 @@ async def get_expiring_items(
 
     items = []
 
+    print(user_id)
+
     async for item in fridge_collection.find({
-        "user_id": user_id
+        "user_id": user_id['sub']
     }):
     
         print(item)
