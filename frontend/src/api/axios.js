@@ -7,6 +7,8 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
+console.log(BASE_URL)
+
 // =========================
 // 요청 인터셉터 (Access Token 자동 첨부)
 // =========================
