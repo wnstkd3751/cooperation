@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 export default function NotificationSetting() {
   const [expireAlert, setExpireAlert] =
@@ -7,13 +9,18 @@ export default function NotificationSetting() {
   const [recipeAlert, setRecipeAlert] =
     useState(true);
 
+    const navigate = useNavigate();
   const saveSetting = () => {
     // TODO API 연결
     alert("알림 설정 저장 완료");
+    navigate("/setting")
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+        <Header onOpenExpire={() => setOpenExpire(true)} />
+      
+      <div className="pt-[5vh]">
       <h1 className="text-xl font-bold mb-6">
         알림 설정
       </h1>
@@ -50,7 +57,7 @@ export default function NotificationSetting() {
         >
           저장
         </button>
-
+</div>
       </div>
     </div>
   );

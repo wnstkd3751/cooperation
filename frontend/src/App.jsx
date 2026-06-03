@@ -10,6 +10,7 @@ import ProtectedRoute from "./routes/ProctectRoute";
 import MySetting from "./components/MySetting";
 import NotificationSetting from "./components/NotificationSetting";
 import PrivacyPolicy from "./components/PrivacyPolicy";
+import ResetPw from "./components/ResetPw";
 
 function Layout() {
 
@@ -27,6 +28,7 @@ function Layout() {
           {/* 공개 */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/resetPw" element={<ResetPw />} />
 
           {/* 보호 */}
           <Route
