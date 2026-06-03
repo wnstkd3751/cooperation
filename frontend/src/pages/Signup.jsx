@@ -51,6 +51,8 @@ export default function Signup() {
           <option>10대</option>
           <option>20대</option>
           <option>30대</option>
+          <option>40대</option>
+          <option>50대 이상</option>
         </select>
 
         <select name="gender" onChange={handleChange} className="input">

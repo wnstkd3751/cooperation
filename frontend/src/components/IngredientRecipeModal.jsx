@@ -1,9 +1,10 @@
+
 export default function IngredientRecipeModal({
   open,
   ingredient,
   recipes = [],
   onClose,
-  onRecipeClick,
+  onSelectRecipe,
 }) {
 
 
@@ -81,7 +82,7 @@ export default function IngredientRecipeModal({
             <div
               key={recipe.rcpSeq}
               onClick={() =>
-                onRecipeClick(recipe)
+                onSelectRecipe(recipe)
               }
               className="
                 bg-gray-50
