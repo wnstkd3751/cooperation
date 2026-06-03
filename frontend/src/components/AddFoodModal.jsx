@@ -23,7 +23,7 @@ export default function AddFoodModal({ onClose, onSuccess }) {
     try {
 
       const res = await axios.post(
-        BASE_URL + "/api/ocr/receipt",
+        BASE_URL + "/ocr/receipt",
         formData,
         {
           headers: {
@@ -31,6 +31,8 @@ export default function AddFoodModal({ onClose, onSuccess }) {
           },
         }
       );
+
+      console.log(res.data)
 
       // 🔥 items 배열 저장
       setItems(
@@ -93,23 +95,36 @@ export default function AddFoodModal({ onClose, onSuccess }) {
       for (const item of selectedItems) {
 
         const newItem = {
-          user_id: "user123",
-          food_id: Date.now().toString(),
+  user_id: "1",
+  food_id: Date.now().toString(),
+  
+  ocr_name: item.ocr_name,
+  name: item.name,
+  quantity: Number(item.quantity),
 
-          name: item.name,
-          quantity: Number(item.quantity),
+  category: item.category,
 
-          category: "",
+  purchase_date: item.purchase_date,
+  expire_date: item.expire_date,
 
-          purchase_date: "",
-          expire_date: "",
+  image: item.image,
 
-          image: "",
+  created_at: new Date().toISOString(),
+};
 
-          created_at: new Date().toISOString(),
-        };
+console.log("저장 데이터", newItem);
 
-        await addFridgeItem(newItem);
+        try {
+
+  await addFridgeItem(newItem);
+
+} catch (err) {
+
+  console.log(err.response);
+  console.log(err.response?.data);
+  console.log(err.response?.status);
+
+}
       }
 
       onSuccess();
@@ -123,7 +138,17 @@ export default function AddFoodModal({ onClose, onSuccess }) {
   return (
     <div className="modal-overlay">
       
-      <div className="modal-box relative">
+      <div
+  className="
+    modal-box
+    relative
+    w-[90%]
+    max-w-md
+    h-[80vh]
+    flex
+    flex-col
+  "
+>
 
 {/* X 버튼 */}
   <button
@@ -151,13 +176,28 @@ export default function AddFoodModal({ onClose, onSuccess }) {
         </button>
 
         {/* OCR 결과 */}
-        <div className="mt-4 space-y-3">
+        <div
+  className="
+    mt-4
+    flex-1
+    overflow-y-auto
+    space-y-3
+    pr-1
+  "
+>
 
           {items.map((item, index) => (
 
             <div
               key={index}
-              className="border p-3 rounded flex items-center gap-2"
+              className="
+    border
+    p-3
+    rounded
+    flex
+    items-center
+    gap-3
+  "
             >
 
               {/* 체크박스 */}
@@ -168,17 +208,30 @@ export default function AddFoodModal({ onClose, onSuccess }) {
               />
 
               {/* 이름 */}
-              <input
-                className="input flex-1"
-                value={item.name}
-                onChange={(e) =>
-                  changeName(index, e.target.value)
-                }
-              />
 
+              <input
+    value={item.name}
+    onChange={(e) =>
+      changeName(index, e.target.value)
+    }
+    className="
+      border
+      rounded
+      px-3
+      py-2
+      flex-1
+    "
+  />
               {/* 수량 */}
               <input
-                className="input w-20"
+                className="
+      border
+      rounded
+      px-3
+      py-2
+      w-20
+      text-center
+    "
                 value={item.quantity}
                 onChange={(e) =>
                   changeQuantity(index, e.target.value)
@@ -191,13 +244,15 @@ export default function AddFoodModal({ onClose, onSuccess }) {
 
         {/* 저장 버튼 */}
         {items.length > 0 && (
-          <button
-            onClick={handleSubmit}
-            className="btn-primary mt-4 w-full"
-          >
-            선택 항목 추가
-          </button>
-        )}
+  <div className="pt-3 border-t mt-3">
+    <button
+      onClick={handleSubmit}
+      className="btn-primary w-full"
+    >
+      선택 항목 추가
+    </button>
+  </div>
+)}
       </div>
     </div>
   );

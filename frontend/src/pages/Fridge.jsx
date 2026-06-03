@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Header from "../components/Header";
-import ExpireBanner from "../components/ExpireBanner";
 import CategoryTabs from "../components/CategoryTabs";
 import FoodCard from "../components/FoodCard";
 import AddFoodModal from "../components/AddFoodModal";
@@ -61,7 +60,6 @@ export default function Fridge() {
     <div>
 
       <Header onOpenExpire={() => setOpenExpire(true)} />
-      <ExpireBanner onOpenRecipe={() => setOpenRecipe(true)} />
 
       <div className="relative">
         {/* CategoryTabs에 상태 연결 */}
@@ -87,7 +85,7 @@ export default function Fridge() {
       </div>
 
       {/* 리스트 */}
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto pb-24">
         <div className="
           grid 
           grid-cols-1 

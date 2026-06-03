@@ -287,7 +287,7 @@ export default function Home() {
             <div className="font-bold text-lg">
 
               {expireSummary ||
-                "임박 재료 없음"}
+                "임박한 재료가 없습니다"}
 
             </div>
 
