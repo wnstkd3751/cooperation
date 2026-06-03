@@ -5,10 +5,16 @@ from app.utils.jwt import (
     create_refresh_token,
     decode_token
 )
-from db.redis import redis_client
+from upstash_redis import Redis
+import os
 from app.schemas.auth import SignupRequest, LoginRequest
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+redis_client = Redis(
+    url=os.getenv("UPSTASH_REDIS_REST_URL"),
+    token=os.getenv("UPSTASH_REDIS_REST_TOKEN")
+)
 
 
 # 회원가입
