@@ -17,6 +17,12 @@ async def create_user(user):
     result = await user_collection.insert_one(user_dict)
     return str(result.inserted_id)
 
+async def delete_user(user_id: str):
+
+    result = await user_collection.delete_one({"id": user_id})
+
+    return result.deleted_count > 0
+
 
 async def authenticate_user(user_id, password):
     user = await user_collection.find_one({"id": user_id})
@@ -28,3 +34,27 @@ async def authenticate_user(user_id, password):
         return None
 
     return user
+
+async def get_user(user_id: str):
+    user = await user_collection.find_one(
+        {"id": user_id},
+        {"_id": 0, "password": 0}
+    )
+
+    return user
+
+
+async def update_user(user_id: str, data):
+    result = await user_collection.update_one(
+        {"id": user_id},
+        {
+            "$set": {
+                "email": data.email,
+                "cooking_level": data.cooking_level,
+                "age_group": data.age_group,
+                "gender": data.gender
+            }
+        }
+    )
+
+    return result.modified_count

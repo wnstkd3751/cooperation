@@ -12,3 +12,9 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     id: str
     password: str
+
+class UserUpdateRequest(BaseModel):
+    email: str
+    cooking_level: str
+    age_group: str
+    gender: str

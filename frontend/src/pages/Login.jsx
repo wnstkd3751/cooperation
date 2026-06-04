@@ -17,8 +17,6 @@ export default function Login() {
 });
 
 
-console.log(import.meta.env.VITE_BASE_URL);
-
 console.log("로그인 성공, 응답 데이터:", res);
 
 const { login: setAuth } = useAuthStore.getState();
