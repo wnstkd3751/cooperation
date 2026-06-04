@@ -12,3 +12,16 @@ class SignupRequest(BaseModel):
 class LoginRequest(BaseModel):
     id: str
     password: str
+
+class SendCodeRequest(BaseModel):
+    email: str
+
+
+class VerifyCodeRequest(BaseModel):
+    email: str
+    code: str
+
+
+class ChangePasswordRequest(BaseModel):
+    email: str
+    password: str

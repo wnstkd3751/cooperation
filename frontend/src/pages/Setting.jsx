@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import ExpireModal from "../components/ExpireModal";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
+import { deleteAccount } from "../api/authApi";
 
 export default function Setting() {
 
@@ -24,7 +25,22 @@ export default function Setting() {
         "정말 회원탈퇴 하시겠습니까?\n모든 데이터가 삭제됩니다."
       )
     ) {
-      // TODO: 회원탈퇴 API 호출
+      try {
+      
+          const res = deleteAccount(userId);
+      
+      
+      console.log("회원탈퇴 성공, 응답 데이터:", res);
+      
+      logout();
+      
+          
+          alert("회원탈퇴 성공");
+          navigate("/login");
+        } catch (e) {
+          console.error(e);
+          alert("회원탈퇴 실패");
+        }
     }
   };
   
