@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">recitalk</string>
+    <string name="title_activity_main">recitalk</string>
+    <string name="package_name">com.recitalk.app</string>
+    <string name="custom_url_scheme">com.recitalk.app</string>
+</resources>
