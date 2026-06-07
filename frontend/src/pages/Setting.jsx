@@ -73,14 +73,14 @@ export default function Setting() {
   }}
 >비밀번호 변경</button>
         </div>
-
+{/* 
         <div className="bg-white p-4 rounded-xl shadow-sm">
           <button
   onClick={() => {
     navigate("/setting/notification")
   }}
 >알림설정</button>
-        </div>
+        </div> */}
 
         <div className="bg-white p-4 rounded-xl shadow-sm">
           <button
