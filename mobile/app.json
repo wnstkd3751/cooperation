@@ -3,19 +3,14 @@
     "name": "ReciTalk",
     "slug": "recitalk",
     "version": "1.0.0",
-
     "orientation": "portrait",
-
     "icon": "./assets/icon.png",
-
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-
     "plugins": [
       [
         "expo-image-picker",
@@ -25,13 +20,19 @@
         }
       ]
     ],
-
     "android": {
       "package": "com.junsang.recitalk",
-
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "86c44db3-85d1-4846-bc5e-46f6bfd4fc99"
       }
     }
   }
