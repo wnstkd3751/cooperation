@@ -39,7 +39,7 @@ app.add_middleware(
         "https://ideal-giggle-jj675qvvwprw2pp79-5173.app.github.dev",
         "https://ideal-fortnight-764xrwqwj7cp6rr-5173.app.github.dev",
         "https://cooperation-4rzk-banx753ob-jun1234755-6882s-projects.vercel.app",
-        "https://cooperation-three.vercel.app?_vercel_share=ReV0JZASRV5GWRt4TMILAgVX0HH8KMos"
+        "https://cooperation-fapgfko3x-junsang-s-projects.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
