@@ -7,7 +7,7 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <WebView
         source={{
-          uri: "https://cooperation-4rzk.vercel.app"
+          uri: "https://cooperation-fapgfko3x-junsang-s-projects.vercel.app"
         }}
         javaScriptEnabled
         domStorageEnabled
