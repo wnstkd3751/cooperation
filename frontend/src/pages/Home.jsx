@@ -12,10 +12,8 @@ import RecommendedRecipeCard from "../components/RecommendedRecipeCard";
 import CookingModal from "../components/CookingModal";
 
 import { useRecommendStore } from "../store/recommendStore";
-
-import {
-  getExpiringFoods
-} from "../api/fridgeApi";
+import { getFridgeItems, getExpiringFoods } from "../api/fridgeApi";
+import { useAuthStore } from "../store/authStore";
 
 export default function Home() {
 
@@ -85,6 +83,8 @@ export default function Home() {
   const [cookingRecipe, setCookingRecipe] =
     useState(null);
 
+  const userId = useAuthStore((state) => state.userId);
+
   const BASE_URL =
     import.meta.env.VITE_BASE_URL;
 
@@ -92,33 +92,29 @@ export default function Home() {
   // 추천 레시피 조회
   // =========================
   const fetchRecommendedRecipes =
-    async () => {
+    async (ingredients) => {
 
       try {
-
-        console.log(BASE_URL);
-
+        
         const response =
           await axios.post(
             BASE_URL +
             "/recommend/list",
             {
-              ingredients:
-                expiringIngredients
+              ingredients
             }
           );
-
-        setRecommendedRecipes(
+        
+         setRecommendedRecipes(
           response.data.recipes || []
         );
-
+    
       } catch (error) {
-
+        
         console.error(
           "추천 레시피 조회 실패",
           error
         );
-
       }
     };
 
@@ -243,11 +239,17 @@ export default function Home() {
   // 최초 로딩
   // =========================
   useEffect(() => {
+    const init = async () => {
+
+      const items =
+        await getFridgeItems(userId);
+
+        fetchRecommendedRecipes(items);
+    };
+
+    init();
 
     fetchExpiringFoods();
-
-    fetchRecommendedRecipes();
-
   }, []);
 
   return (
