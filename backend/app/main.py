@@ -38,7 +38,7 @@ app.add_middleware(
     allow_origins=[
         "https://ideal-giggle-jj675qvvwprw2pp79-5173.app.github.dev",
         "https://ideal-fortnight-764xrwqwj7cp6rr-5173.app.github.dev",
-        "https://cooperation-4rzk.vercel.app/",
+        "https://cooperation-4rzk.vercel.app",
         "https://cooperation-fapgfko3x-junsang-s-projects.vercel.app"
     ],
     allow_credentials=True,
