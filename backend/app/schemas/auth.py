@@ -1,8 +1,11 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 
 class ConsentInfo(BaseModel):
     privacy_policy: bool
     ai_transfer: bool
+
+class CheckEmailRequest(BaseModel):
+    email: EmailStr
 
 class CheckIdRequest(BaseModel):
     id: str

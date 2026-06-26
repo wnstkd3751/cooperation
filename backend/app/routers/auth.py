@@ -12,7 +12,7 @@ import random
 import os
 from app.utils.mail import send_email
 from passlib.context import CryptContext
-from app.schemas.auth import SignupRequest, LoginRequest, SendCodeRequest, VerifyCodeRequest, ChangePasswordRequest, CheckIdRequest
+from app.schemas.auth import SignupRequest, LoginRequest, SendCodeRequest, VerifyCodeRequest, ChangePasswordRequest, CheckIdRequest, CheckEmailRequest
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -114,6 +114,20 @@ async def get_user(user_id: str):
 async def update_user(user_id: str, req: UserUpdateRequest):
     await user_service.update_user(user_id, req)
     return {"message": "수정 완료"}
+
+@router.post("/check-email")
+async def check_email(req: CheckEmailRequest):
+    user = await user_service.user_collection.find_one(
+        {"email": req.email}
+    )
+
+    if user:
+        raise HTTPException(
+            status_code=409,
+            detail="이미 사용 중인 이메일입니다."
+        )
+
+    return {"message": "사용 가능한 이메일입니다."}
 
 
 @router.post("/send-code")

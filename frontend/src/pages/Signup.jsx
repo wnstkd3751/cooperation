@@ -41,17 +41,94 @@ export default function Signup() {
     }
   };
 
+  const isValidEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+const validateForm = () => {
+
+  if (!form.id.trim()) {
+    return "아이디를 입력해주세요.";
+  }
+
+  if (form.id.length < 4) {
+    return "아이디는 4자 이상 입력해주세요.";
+  }
+
+  if (!isValidEmail(form.email)) {
+    return "이메일 형식이 올바르지 않습니다.";
+  }
+
+  if (!emailVerified) {
+    return "이메일 인증을 완료해주세요.";
+  }
+
+  if (form.password.length < 8) {
+    return "비밀번호는 8자 이상 입력해주세요.";
+  }
+
+  if (!/[A-Za-z]/.test(form.password)) {
+    return "비밀번호에 영문을 포함해주세요.";
+  }
+
+  if (!/\d/.test(form.password)) {
+    return "비밀번호에 숫자를 포함해주세요.";
+  }
+
+  if (!isPasswordMatch) {
+    return "비밀번호가 일치하지 않습니다.";
+  }
+
+  if (!isAgeValid) {
+    return "만 14세 이상만 가입 가능합니다.";
+  }
+
+  if (!agreePrivacy) {
+    return "개인정보처리방침에 동의해주세요.";
+  }
+
+  if (!agreeAiTransfer) {
+    return "AI 정보 전송에 동의해주세요.";
+  }
+
+  return null;
+};
+
   // 이메일 인증코드 발송
   const handleSendCode = async () => {
-    if (!form.email) return;
-    try {
-      await sendCode(form.email);
-      setCodeSent(true);
-      alert("인증번호가 발송되었습니다");
-    } catch {
-      alert("인증번호 발송 실패");
-    }
-  };
+
+  if (!form.email) {
+    alert("이메일을 입력해주세요.");
+    return;
+  }
+
+  if (!isValidEmail(form.email)) {
+    alert("올바른 이메일 형식이 아닙니다.");
+    return;
+  }
+
+  try {
+
+    // 이메일 중복 확인
+    await checkEmail(form.email);
+
+    // 인증번호 발송
+    await sendCode(form.email);
+
+    setCodeSent(true);
+
+    alert("인증번호가 발송되었습니다.");
+
+  } catch (e) {
+
+    alert(
+      e?.response?.data?.detail ??
+      "인증번호 발송 실패"
+    );
+
+  }
+
+};
 
   // 이메일 인증코드 확인
   const handleVerifyCode = async () => {
@@ -80,27 +157,42 @@ export default function Signup() {
     agreeAiTransfer;
 
   const handleSignup = async () => {
-    if (!canSubmit) return;
-    try {
-      await signup({
-        id: form.id,
-        password: form.password,
-        email: form.email,
-        age: Number(form.age),
-        cooking_level: form.cooking_level,
-        gender: form.gender,
-        consents: {
-          privacy_policy: agreePrivacy,
-          ai_transfer: agreeAiTransfer,
-        },
-      });
-      alert("회원가입 성공");
-      navigate("/login");
-    } catch (e) {
-      const msg = e?.response?.data?.detail || "회원가입 실패";
-      alert(msg);
-    }
-  };
+
+  const error = validateForm();
+
+  if (error) {
+    alert(error);
+    return;
+  }
+
+  try {
+
+    await signup({
+      id: form.id,
+      password: form.password,
+      email: form.email,
+      age: Number(form.age),
+      cooking_level: form.cooking_level,
+      gender: form.gender,
+      consents: {
+        privacy_policy: agreePrivacy,
+        ai_transfer: agreeAiTransfer,
+      },
+    });
+
+    alert("회원가입 성공");
+    navigate("/login");
+
+  } catch (e) {
+
+    alert(
+      e?.response?.data?.detail ??
+      "회원가입 실패"
+    );
+
+  }
+
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
