@@ -9,6 +9,7 @@ from upstash_redis import Redis
 from app.utils.deps import get_current_user
 import random
 import os
+from app.utils.mail import send_email
 from passlib.context import CryptContext
 from app.schemas.auth import SignupRequest, LoginRequest, SendCodeRequest, VerifyCodeRequest, ChangePasswordRequest
 
