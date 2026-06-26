@@ -10,6 +10,7 @@ from app.utils.deps import get_current_user
 from app.utils.mail import send_email
 import random
 import os
+from app.utils.mail import send_email
 from passlib.context import CryptContext
 from app.schemas.auth import SignupRequest, LoginRequest, SendCodeRequest, VerifyCodeRequest, ChangePasswordRequest, CheckIdRequest
 
@@ -135,14 +136,24 @@ async def verify_code(req: VerifyCodeRequest):
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
 @router.post("/change-password")
 async def change_password(req: ChangePasswordRequest):
     hashed_password = pwd_context.hash(req.password)
+
+    print(req.email)
+
     result = await user_service.user_collection.update_one(
         {"email": req.email},
         {"$set": {"password": hashed_password}}
     )
-    if result.modified_count == 0:
-        raise HTTPException(404, "사용자 없음")
+
+    print(result.matched_count)
+    print(result.modified_count)
+
+    if result.matched_count == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="사용자 없음"
+        )
+
     return {"message": "비밀번호 변경 완료"}

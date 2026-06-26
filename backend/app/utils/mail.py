@@ -1,36 +1,47 @@
 import smtplib
-
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import os
 
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
+EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
-SMTP_USER = "ggs2026@gmail.com"
-SMTP_PASSWORD = "junsang123"
 
-def send_email(email: str, code: str):
+def send_email(to_email: str, code: str):
+    subject = "ReciTalk 이메일 인증번호"
 
-    msg = MIMEText(
-        f"인증번호 : {code}"
-    )
+    body = f"""
+안녕하세요.
 
-    msg["Subject"] = "냉장고 앱 인증번호"
+인증번호는 아래와 같습니다.
 
-    msg["From"] = SMTP_USER
-    msg["To"] = email
+{code}
 
-    server = smtplib.SMTP(
-        SMTP_SERVER,
-        SMTP_PORT
-    )
+5분 이내에 입력해주세요.
+"""
 
-    server.starttls()
+    message = MIMEMultipart()
+    message["From"] = EMAIL_ADDRESS
+    message["To"] = to_email
+    message["Subject"] = subject
 
-    server.login(
-        SMTP_USER,
-        SMTP_PASSWORD
-    )
+    message.attach(MIMEText(body, "plain"))
 
-    server.send_message(msg)
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
 
-    server.quit()
+        server.login(
+            EMAIL_ADDRESS,
+            EMAIL_PASSWORD
+        )
+
+        server.send_message(message)
+        server.quit()
+
+        print(f"메일 발송 완료: {to_email}")
+        print(f"비밀번호 : {code}")
+
+    except Exception as e:
+        print(f"메일 발송 실패: {e}")
+        raise e
