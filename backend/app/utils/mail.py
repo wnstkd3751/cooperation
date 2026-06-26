@@ -40,6 +40,7 @@ def send_email(to_email: str, code: str):
         server.quit()
 
         print(f"메일 발송 완료: {to_email}")
+        print(f"비밀번호 : {code}")
 
     except Exception as e:
         print(f"메일 발송 실패: {e}")

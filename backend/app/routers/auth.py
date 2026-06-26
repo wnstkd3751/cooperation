@@ -205,6 +205,9 @@ async def change_password(
         )
     )
 
+    print(req.email)
+    
+
     result = await user_service.user_collection.update_one(
         {
             "email": req.email
@@ -215,6 +218,9 @@ async def change_password(
             }
         }
     )
+
+    print(result.matched_count)
+    print(result.modified_count)
 
     if result.modified_count == 0:
         raise HTTPException(
