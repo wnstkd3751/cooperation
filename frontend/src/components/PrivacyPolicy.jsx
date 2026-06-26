@@ -1,18 +1,18 @@
 import { useNavigate } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Header from "../components/Header";
+import privacyPolicyContent from "../content/PrivacyPolicy.md?raw";
 
 export default function PrivacyPolicy() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-        <Header onOpenExpire={() => setOpenExpire(true)} />
+      <Header />
 
-      {/* 상단 헤더 */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-bold">
-          개인정보 처리방침
-        </h1>
+        <h1 className="text-xl font-bold">개인정보 처리방침</h1>
 
         <button
           onClick={() => navigate(-1)}
@@ -22,21 +22,11 @@ export default function PrivacyPolicy() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-5 space-y-4">
-        <p>
-          본 서비스는 회원가입 및 로그인 기능을 제공하기 위해
-          아이디, 이메일 정보를 수집합니다.
-        </p>
-
-        <p>
-          수집된 정보는 서비스 제공 목적 외에는 사용되지 않습니다.
-        </p>
-
-        <p>
-          사용자는 언제든지 회원탈퇴를 통해 개인정보 삭제를 요청할 수 있습니다.
-        </p>
+      <div className="bg-white rounded-xl shadow-sm p-6 md:p-8 prose prose-sm md:prose-base max-w-none prose-headings:font-bold prose-h2:mt-8 prose-h2:mb-3 prose-h2:pb-2 prose-h2:border-b prose-h2:border-gray-200 prose-h3:mt-5 prose-h3:mb-2 prose-table:text-sm prose-th:bg-gray-50 prose-th:px-3 prose-th:py-2 prose-td:px-3 prose-td:py-2 prose-td:border prose-th:border prose-td:border-gray-200 prose-th:border-gray-200 prose-hr:my-8">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {privacyPolicyContent}
+        </ReactMarkdown>
       </div>
-
     </div>
   );
 }
