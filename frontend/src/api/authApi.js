@@ -59,6 +59,15 @@ export const updateUserInfo = async (
   return res.data;
 };
 
+export const checkEmail = async (email) => {
+  const res = await axios.post(
+    `${BASE_URL}/auth/check-email`,
+    { email }
+  );
+
+  return res.data;
+};
+
 export const sendCode = async (
   email
 ) => {

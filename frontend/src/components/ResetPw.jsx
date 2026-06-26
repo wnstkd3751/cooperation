@@ -98,6 +98,9 @@ export default function PasswordChange() {
 
       } catch (e) {
 
+        console.log(e.response.status);
+        console.log(e.response.data);
+
         console.error(e);
 
         alert(
