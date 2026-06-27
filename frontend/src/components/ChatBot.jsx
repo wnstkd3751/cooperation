@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 import { useRecommendStore }
 from "../store/recommendStore";
 
@@ -12,6 +15,47 @@ from "./RecipeCard";
 
 import { useChatStore }
 from "../store/chatStore";
+
+// 챗봇 답변 마크다운 렌더링 스타일
+const mdComponents = {
+  h1: (props) => (
+    <h3 className="text-lg font-bold mb-2" {...props} />
+  ),
+  h2: (props) => (
+    <h3 className="text-lg font-bold mb-2" {...props} />
+  ),
+  h3: (props) => (
+    <h3 className="text-lg font-bold mb-2" {...props} />
+  ),
+  strong: (props) => (
+    <strong className="font-semibold text-gray-900" {...props} />
+  ),
+  p: (props) => (
+    <p className="my-1 leading-relaxed" {...props} />
+  ),
+  ul: (props) => (
+    <ul className="list-disc pl-5 my-1 space-y-1" {...props} />
+  ),
+  ol: (props) => (
+    <ol className="list-decimal pl-5 my-1 space-y-1" {...props} />
+  ),
+  blockquote: (props) => (
+    <blockquote
+      className="
+        border-l-4
+        border-orange-300
+        bg-orange-50/70
+        rounded-r-xl
+        px-4
+        py-2
+        my-2
+        text-sm
+        text-gray-700
+      "
+      {...props}
+    />
+  ),
+};
 
 export default function ChatBot({
   onClose,
@@ -81,11 +125,14 @@ const addMessage =
     const userId =
       localStorage.getItem("user_id");
 
+    const token =
+      localStorage.getItem("access_token");
+
     setMessage("");
 
     try {
 
-      const res = await axios.post(
+const res = await axios.post(
         BASE_URL + "/recommend/chat",
         {
           user_message:
@@ -103,6 +150,11 @@ const addMessage =
                 content: msg.content,
               })
             ),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -244,11 +296,9 @@ const addMessage =
                   (part, partIdx) => {
 
                     const recipe =
-  partIdx > 0
-    ? msg.recipes?.[
-        partIdx - 1
-      ]
-    : null;
+                      partIdx > 0
+                        ? msg.recipes?.[partIdx - 1]
+                        : null;
 
                     return (
 
@@ -286,7 +336,16 @@ const addMessage =
                             }
                           `}
                         >
-                          {part.trim()}
+                          {msg.role === "assistant" ? (
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              components={mdComponents}
+                            >
+                              {part.trim()}
+                            </ReactMarkdown>
+                          ) : (
+                            part.trim()
+                          )}
                         </div>
 
                         {/* 레시피 카드 */}
