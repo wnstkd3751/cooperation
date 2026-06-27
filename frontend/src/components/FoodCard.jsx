@@ -1,4 +1,6 @@
 // components/FoodCard.jsx
+import { formatDday } from "../utils/dday";
+
 export default function FoodCard({ item }) {
   const getColor = () => {
     if (item.dday <= 1) return "dday-red";
@@ -29,7 +31,7 @@ export default function FoodCard({ item }) {
 
         <div className="flex justify-between items-center mt-3">
           <span className={`text-xs px-3 py-1 rounded-full ${getColor()}`}>
-            D-{item.dday}
+            {formatDday(item.dday)}
           </span>
 
           <div className="w-5 h-5 border rounded-full"></div>

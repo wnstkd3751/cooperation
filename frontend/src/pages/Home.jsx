@@ -76,6 +76,11 @@ export default function Home() {
     setExpireMessage
   ] = useState("");
 
+  const [
+    expiredIngredients,
+    setExpiredIngredients
+  ] = useState([]);
+
   // 요리 모달
   const [openCooking, setOpenCooking] =
     useState(false);
@@ -144,6 +149,10 @@ export default function Home() {
 
         setExpiringIngredients(
           response.items || []
+        );
+
+        setExpiredIngredients(
+          response.expired || []
         );
 
       } catch (error) {
@@ -315,7 +324,7 @@ export default function Home() {
 
         </div>
 
-        {/* 임박 재료 */}
+{/* 임박 재료 */}
         <div className="mb-10">
 
           <h2 className="text-2xl font-bold mb-4">
@@ -377,7 +386,9 @@ export default function Home() {
                       "
                     >
 
-                      D-{item.remain_days}
+                      {item.remain_days === 0
+                        ? "오늘까지"
+                        : `유통기한 ${item.remain_days}일 남음`}
 
                     </div>
 
@@ -391,6 +402,75 @@ export default function Home() {
           )}
 
         </div>
+
+        {/* 상한 재료 */}
+        {expiredIngredients.length > 0 && (
+
+          <div className="mb-10">
+
+            <h2 className="text-2xl font-bold mb-4">
+
+              🗑️ 상한 재료
+
+            </h2>
+
+            <div className="space-y-3">
+
+              {expiredIngredients.map(
+                (item, index) => (
+
+                  <div
+                    key={index}
+                    className="
+                      bg-gray-50
+                      rounded-2xl
+                      p-4
+                      border
+                      flex
+                      justify-between
+                      items-center
+                    "
+                  >
+
+                    <div>
+
+                      <div className="font-semibold text-gray-500">
+
+                        {item.name}
+
+                      </div>
+
+                      <div className="text-sm text-gray-400">
+
+                        유통기한:
+                        {" "}
+                        {item.expire_date}
+
+                      </div>
+
+                    </div>
+
+                    <div
+                      className="
+                        text-gray-500
+                        font-bold
+                      "
+                    >
+
+                      {`유통기한 ${Math.abs(item.remain_days)}일 지남`}
+
+                    </div>
+
+                  </div>
+
+                )
+              )}
+
+            </div>
+
+          </div>
+
+        )}
 
         {/* 추천 레시피 */}
         <div>
