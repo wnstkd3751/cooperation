@@ -39,7 +39,14 @@ async def chat(user_message, user_id, recipes, conversation_history=[]):
         messages=messages
     )
 
+    answer = response.content[0].text
+
+    # 답변에 실제 등장한 레시피만 카드로 (없으면 점수 상위 3개로 폴백)
+    matched = [r for r in recipes[:30] if r["recipeName"] in answer]
+    matched.sort(key=lambda r: answer.index(r["recipeName"]))  # 답변에 나온 순서대로
+    cards = matched[:3] if matched else recipes[:3]
+
     return {
-        "answer": response.content[0].text,
-        "recommended_recipes": recipes[:3]
+        "answer": answer,
+        "recommended_recipes": cards
     }
