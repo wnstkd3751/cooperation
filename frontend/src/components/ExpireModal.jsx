@@ -1,6 +1,11 @@
+import { formatDday } from "../utils/dday";
+
 export default function ExpireModal({ items, onClose }) {
-  const urgent = items.filter((i) => i.dday <= 3);
-  const warning = items.filter((i) => i.dday > 3 && i.dday <= 7);
+  // dday(Fridge) / remain_days(Home) 등 호출처마다 다른 필드명 흡수
+  const getDday = (i) => i.dday ?? i.remain_days;
+
+  const urgent = items.filter((i) => getDday(i) >= 0 && getDday(i) <= 3);
+  const warning = items.filter((i) => getDday(i) > 3 && getDday(i) <= 7);
 
   const renderItem = (item) => (
     <div className="flex justify-between items-center bg-red-50 p-3 rounded-xl mb-2">
@@ -10,7 +15,7 @@ export default function ExpireModal({ items, onClose }) {
       </div>
 
       <span className="text-xs px-2 py-1 bg-red-100 text-red-500 rounded-full">
-        D-{item.dday}
+        {formatDday(getDday(item))}
       </span>
     </div>
   );
@@ -46,7 +51,7 @@ export default function ExpireModal({ items, onClose }) {
               </div>
 
               <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-500 rounded-full">
-                D-{item.dday}
+                {formatDday(getDday(item))}
               </span>
             </div>
           ))}

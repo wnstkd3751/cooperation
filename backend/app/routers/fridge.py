@@ -39,38 +39,28 @@ async def remove_item(item_id: str):
 async def expiring_foods(
     user=Depends(get_current_user)
 ):
-    items = await fridge_service.get_expiring_items(
+    result = await fridge_service.get_expiring_items(
         user_id=user["sub"],
-        days=3
+        days=7
     )
 
+    expiring = result["expiring"]   # 임박 (0~7일)
+    expired = result["expired"]     # 상함 (지남)
 
-    if len(items) == 0:
-
-        return {
-            "summary":
-                "임박한 재료가 없습니다",
-
-            "items": []
-        }
-
-    first = items[0]["name"]
-
-    summary = first
-
-    if len(items) > 1:
-
-        summary += (
-            f" 외 {len(items)-1}개"
-        )
+    # 상단 요약 문구
+    if len(expiring) == 0:
+        summary = "임박한 재료가 없습니다"
+        message = ""
+    else:
+        first = expiring[0]["name"]
+        summary = first
+        if len(expiring) > 1:
+            summary += f" 외 {len(expiring)-1}개"
+        message = "유통기한 7일 이내!"
 
     return {
-        "summary":
-            summary,
-
-        "message":
-            "유통기한 3일 이내!",
-
-        "items":
-            items
+        "summary": summary,
+        "message": message,
+        "items": expiring,    # 기존 키 유지 (임박)
+        "expired": expired,   # 신규 (상한)
     }
