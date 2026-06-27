@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signup, sendCode, verifyCode } from "../api/authApi";
+import { signup, sendCode, verifyCode, checkEmail } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
@@ -109,9 +109,12 @@ const validateForm = () => {
 
   try {
 
+    console.log("checkEmail")
+
     // 이메일 중복 확인
     await checkEmail(form.email);
 
+    console.log("sendCode")
     // 인증번호 발송
     await sendCode(form.email);
 
@@ -121,8 +124,8 @@ const validateForm = () => {
 
   } catch (e) {
 
+
     alert(
-      e?.response?.data?.detail ??
       "인증번호 발송 실패"
     );
 
