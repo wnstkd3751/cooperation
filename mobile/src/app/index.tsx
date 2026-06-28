@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <WebView
       source={{
-        uri: "https://cooperation-4rzk.vercel.app"
+        uri: "https://cooperation-chi.vercel.app"
       }}
     />
   );
