@@ -6,6 +6,8 @@ export default function AddFoodModal({ onClose, onSuccess }) {
 
   const [imageFile, setImageFile] = useState(null);
 
+  const [loading, setLoading] = useState(false);
+
   // 🔥 OCR 결과 배열
   const [items, setItems] = useState([]);
 
@@ -13,39 +15,38 @@ export default function AddFoodModal({ onClose, onSuccess }) {
   // OCR 요청
   // =========================
   const handleOCR = async () => {
+  if (!imageFile) return;
 
-    if (!imageFile) return;
+  const formData = new FormData();
+  formData.append("image", imageFile);
 
-    const formData = new FormData();
-    formData.append("image", imageFile);
-    const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-    try {
+  try {
+    setLoading(true);
 
-      const res = await axios.post(
-        BASE_URL + "/ocr/receipt",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+    const res = await axios.post(
+      BASE_URL + "/ocr/receipt",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
-      console.log(res.data)
-
-      // 🔥 items 배열 저장
-      setItems(
-        res.data.items.map((item) => ({
-          ...item,
-          checked: true,
-        }))
-      );
-
-    } catch (err) {
-      console.error("OCR 실패:", err);
-    }
-  };
+    setItems(
+      res.data.items.map((item) => ({
+        ...item,
+        checked: true,
+      }))
+    );
+  } catch (err) {
+    console.error("OCR 실패:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // =========================
   // 체크박스 변경
@@ -251,6 +252,24 @@ console.log("저장 데이터", newItem);
     >
       선택 항목 추가
     </button>
+  </div>
+)}
+
+{loading && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] flex items-center justify-center">
+    <div className="bg-white rounded-2xl px-8 py-6 shadow-xl flex flex-col items-center">
+      <div className="w-12 h-12 border-4 border-gray-200 border-t-green-500 rounded-full animate-spin"></div>
+
+      <h3 className="mt-4 text-lg font-semibold">
+        영수증 분석 중...
+      </h3>
+
+      <p className="mt-2 text-sm text-gray-500">
+        재료를 추출하고 있습니다.
+        <br />
+        잠시만 기다려 주세요.
+      </p>
+    </div>
   </div>
 )}
       </div>
