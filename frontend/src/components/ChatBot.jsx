@@ -67,6 +67,8 @@ export default function ChatBot({
   const [message, setMessage] =
     useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const messages =
   useChatStore(
     (state) => state.messages
@@ -102,84 +104,69 @@ const addMessage =
 
     }
 
-  }, [messages]);
+  }, [messages, loading]);
 
   const sendMessage = async () => {
+  if (!message.trim()) return;
 
-    if (!message.trim()) return;
-
-    const userMessage = {
-      role: "user",
-      content: message,
-    };
-
-    const updatedMessages = [
-      ...messages,
-      userMessage,
-    ];
-
-    addMessage(userMessage);
-
-    const currentMessage = message;
-
-    const userId =
-      localStorage.getItem("user_id");
-
-    const token =
-      localStorage.getItem("access_token");
-
-    setMessage("");
-
-    try {
-
-const res = await axios.post(
-        BASE_URL + "/recommend/chat",
-        {
-          user_message:
-            currentMessage,
-
-          user_id: userId,
-
-          recipes:
-            recommendedRecipes,
-
-          conversation_history:
-            updatedMessages.map(
-              (msg) => ({
-                role: msg.role,
-                content: msg.content,
-              })
-            ),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      addMessage({
-  role: "assistant",
-  content:
-    res.data.answer,
-  recipes:
-    res.data
-      .recommended_recipes || [],
-});
-
-    } catch (e) {
-
-      console.error(e);
-
-      addMessage({
-  role: "assistant",
-  content:
-    "오류가 발생했습니다 😢",
-});
-
-    }
-
+  const userMessage = {
+    role: "user",
+    content: message,
   };
+
+  const updatedMessages = [
+    ...messages,
+    userMessage,
+  ];
+
+  addMessage(userMessage);
+
+  const currentMessage = message;
+
+  const userId = localStorage.getItem("user_id");
+  const token = localStorage.getItem("access_token");
+
+  setMessage("");
+
+  try {
+    setLoading(true);
+
+    const res = await axios.post(
+      BASE_URL + "/recommend/chat",
+      {
+        user_message: currentMessage,
+        user_id: userId,
+        recipes: recommendedRecipes,
+        conversation_history: updatedMessages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    addMessage({
+      role: "assistant",
+      content: res.data.answer,
+      recipes: res.data.recommended_recipes || [],
+    });
+
+  } catch (e) {
+    console.error(e);
+
+    addMessage({
+      role: "assistant",
+      content: "오류가 발생했습니다 😢",
+    });
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
 
@@ -390,6 +377,37 @@ const res = await axios.post(
 
           })}
 
+          {loading && (
+  <div className="flex justify-start">
+    <div
+      className="
+        bg-white
+        border
+        border-orange-100
+        rounded-3xl
+        px-5
+        py-4
+        shadow-sm
+        max-w-[85%]
+      "
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-5 h-5 border-2 border-gray-300 border-t-orange-500 rounded-full animate-spin"></div>
+
+        <div>
+          <p className="font-medium">
+            AI가 답변을 작성 중입니다...
+          </p>
+
+          <p className="text-sm text-gray-500">
+            잠시만 기다려 주세요.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
         </div>
 
         {/* 입력창 */}
@@ -438,22 +456,24 @@ const res = await axios.post(
             />
 
             <button
-              onClick={sendMessage}
-              className="
-                bg-gradient-to-r
-                from-orange-400
-                to-red-400
-                text-white
-                px-5
-                py-3
-                rounded-xl
-                font-semibold
-                hover:scale-105
-                transition
-              "
-            >
-              전송
-            </button>
+  onClick={sendMessage}
+  disabled={loading}
+  className={`
+    px-5
+    py-3
+    rounded-xl
+    font-semibold
+    transition
+    text-white
+    ${
+      loading
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-gradient-to-r from-orange-400 to-red-400 hover:scale-105"
+    }
+  `}
+>
+  전송
+</button>
 
           </div>
 
@@ -482,6 +502,8 @@ const res = await axios.post(
         />
 
       )}
+
+      
 
     </div>
 

@@ -8,3 +8,5 @@ npm run dev -- --host
 redis-server
 
 pip freeze > requirements.txt
+
+eas build -p android --profile production
